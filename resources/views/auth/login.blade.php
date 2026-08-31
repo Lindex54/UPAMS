@@ -18,15 +18,12 @@
                 </div>
             </div>
 
-            <div class="my-auto max-w-xl py-16">
-                <div class="mb-7 h-1 w-14 rounded-full bg-busitema-gold"></div>
-                <p class="text-sm font-semibold tracking-[0.2em] text-busitema-gold uppercase">Welcome to UPAMS</p>
-                <h1 class="mt-4 text-4xl font-semibold leading-tight text-white xl:text-5xl">
-                    University Property and Asset Management System
+            <div class="my-auto w-full max-w-2xl py-16">
+                <h1 class="text-[clamp(1.875rem,3vw,3.75rem)] font-semibold leading-[1.14] tracking-tight text-white">
+                    <span class="block whitespace-nowrap">University Property and</span>
+                    <span class="block whitespace-nowrap">Asset Management System</span>
+                    <span class="block whitespace-nowrap">(UPAMS)</span>
                 </h1>
-                <p class="mt-6 max-w-lg text-lg leading-8 text-white/90">
-                    A secure central platform for managing university property, facilities, equipment, and institutional assets.
-                </p>
             </div>
 
             <p class="text-sm text-white/80">

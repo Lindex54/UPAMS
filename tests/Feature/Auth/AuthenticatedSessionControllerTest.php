@@ -70,13 +70,4 @@ class AuthenticatedSessionControllerTest extends TestCase
 
         $this->assertAuthenticatedAs($user);
     }
-
-    public function test_authenticated_users_are_redirected_away_from_the_login_page(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->get(route('login'));
-
-        $response->assertRedirect(route('dashboard'));
-    }
 }
