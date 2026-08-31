@@ -21,7 +21,11 @@
         }"
         @keydown.escape.window="sidebarOpen = false"
     >
-        <x-sidebar />
+        @hasSection('sidebar')
+            @yield('sidebar')
+        @else
+            <x-sidebar />
+        @endif
 
         <div
             class="min-h-screen pt-16 transition-[padding] duration-200 lg:pt-0"
@@ -29,17 +33,21 @@
         >
             <header class="flex min-h-20 items-center justify-between border-b border-border bg-white px-5 sm:px-8">
                 <div>
-                    <p class="text-xs font-semibold tracking-[0.14em] text-busitema-blue uppercase">UPAMS Administration</p>
+                    <p class="text-xs font-semibold tracking-[0.14em] text-busitema-blue uppercase">@yield('portal-label', 'UPAMS Administration')</p>
                     <h1 class="mt-1 text-2xl font-semibold text-heading">@yield('page-heading', 'Dashboard')</h1>
                 </div>
 
                 <div class="hidden items-center gap-3 sm:flex">
                     <div class="text-right">
                         <p class="text-sm font-semibold text-heading">{{ auth()->user()?->name ?? 'Design Preview' }}</p>
-                        <p class="text-xs text-body-text">System Administrator</p>
+                        <p class="text-xs text-body-text">@yield('user-role', 'System Administrator')</p>
                     </div>
                     <div class="flex size-10 items-center justify-center rounded-full bg-busitema-blue text-sm font-semibold text-white" aria-hidden="true">
-                        {{ str(auth()->user()?->name ?? 'System Administrator')->substr(0, 1)->upper() }}
+                        @auth
+                            {{ str(auth()->user()->name)->substr(0, 1)->upper() }}
+                        @else
+                            @yield('user-initial', 'S')
+                        @endauth
                     </div>
                 </div>
             </header>

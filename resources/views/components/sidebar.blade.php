@@ -1,4 +1,8 @@
-@props(['navigationGroups' => null])
+@props([
+    'navigationGroups' => null,
+    'ariaLabel' => 'System Administrator navigation',
+    'sidebarId' => 'administrator-sidebar',
+])
 
 @php
     $navigationGroups ??= [
@@ -53,7 +57,7 @@
             type="button"
             @click="sidebarOpen = true"
             aria-label="Open navigation"
-            aria-controls="administrator-sidebar"
+            aria-controls="{{ $sidebarId }}"
             :aria-expanded="sidebarOpen"
         >
             <svg class="size-6" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -72,13 +76,13 @@
     ></div>
 
     <aside
-        id="administrator-sidebar"
+        id="{{ $sidebarId }}"
         class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-busitema-blue shadow-xl transition-[width,transform] duration-200 ease-out lg:translate-x-0 lg:shadow-none"
         :class="[
             sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
             sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'
         ]"
-        aria-label="System Administrator navigation"
+        aria-label="{{ $ariaLabel }}"
     >
         <div class="flex min-h-24 items-center gap-3 border-b border-white/15 px-4 py-4">
             <div
