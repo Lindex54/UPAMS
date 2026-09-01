@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Campus;
+use App\Models\OrgUnit;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
@@ -25,7 +28,9 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'middle_name' => ['nullable', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
@@ -33,6 +38,11 @@ class UpdateUserRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->route('user')),
             ],
+            'telephone' => ['required', 'string', 'max:30', 'regex:/^\+?[0-9\s().-]{7,30}$/'],
+            'position' => ['nullable', 'string', 'max:255'],
+            'campus_id' => ['required', 'integer', Rule::exists(Campus::class, 'id')],
+            'org_unit_id' => ['required', 'integer', Rule::exists(OrgUnit::class, 'id')],
+            'role_id' => ['required', 'integer', Rule::exists(Role::class, 'id')],
         ];
     }
 
@@ -40,6 +50,7 @@ class UpdateUserRequest extends FormRequest
     {
         $this->merge([
             'email' => Str::lower(trim($this->string('email')->toString())),
+            'telephone' => trim($this->string('telephone')->toString()),
         ]);
     }
 }
