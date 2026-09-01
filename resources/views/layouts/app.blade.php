@@ -37,18 +37,30 @@
                     <h1 class="mt-1 text-2xl font-semibold text-heading">@yield('page-heading', 'Dashboard')</h1>
                 </div>
 
-                <div class="hidden items-center gap-3 sm:flex">
-                    <div class="text-right">
-                        <p class="text-sm font-semibold text-heading">{{ auth()->user()?->name ?? 'Design Preview' }}</p>
-                        <p class="text-xs text-body-text">@yield('user-role', 'System Administrator')</p>
-                    </div>
-                    <div class="flex size-10 items-center justify-center rounded-full bg-busitema-blue text-sm font-semibold text-white" aria-hidden="true">
-                        @auth
+                <div class="flex items-center gap-3">
+                    <div class="hidden items-center gap-3 sm:flex">
+                        <div class="text-right">
+                            <p class="text-sm font-semibold text-heading">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-body-text">@yield('user-role', 'System Administrator')</p>
+                        </div>
+                        <div class="flex size-10 items-center justify-center rounded-full bg-busitema-blue text-sm font-semibold text-white" aria-hidden="true">
                             {{ str(auth()->user()->name)->substr(0, 1)->upper() }}
-                        @else
-                            @yield('user-initial', 'S')
-                        @endauth
+                        </div>
                     </div>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button
+                            class="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-white px-3 text-sm font-semibold text-busitema-deep-blue transition hover:border-busitema-blue hover:text-busitema-blue focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-busitema-blue"
+                            type="submit"
+                        >
+                            <svg class="size-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 17l5-5-5-5M15 12H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
+                            </svg>
+                            <span class="hidden md:inline">Sign out</span>
+                            <span class="sr-only md:hidden">Sign out</span>
+                        </button>
+                    </form>
                 </div>
             </header>
 

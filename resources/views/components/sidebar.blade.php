@@ -38,7 +38,7 @@
             ['label' => 'Audit Trail', 'href' => url('/audit-trail'), 'pattern' => 'audit-trail*'],
         ]],
         ['label' => 'Administration', 'items' => [
-            ['label' => 'Users', 'href' => url('/users'), 'pattern' => 'users*'],
+            ['label' => 'Users', 'href' => route('users.index'), 'pattern' => 'users.*', 'route' => true],
             ['label' => 'Roles & Permissions', 'href' => url('/roles'), 'pattern' => 'roles*'],
             ['label' => 'Campuses', 'href' => url('/campuses'), 'pattern' => 'campuses*'],
             ['label' => 'Organizational Units', 'href' => url('/organizational-units'), 'pattern' => 'organizational-units*'],

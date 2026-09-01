@@ -4,6 +4,8 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class AuthenticatedSessionControllerTest extends TestCase
@@ -16,7 +18,8 @@ class AuthenticatedSessionControllerTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('University Property and Asset Management System')
+            ->assertSee('University Property and')
+            ->assertSee('Asset Management System')
             ->assertSee('images/busitema-logo.png', escape: false)
             ->assertSee('Email address')
             ->assertSee('Forgot password?')
@@ -34,6 +37,18 @@ class AuthenticatedSessionControllerTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_validation_errors_are_displayed_on_the_login_page(): void
+    {
+        $this->from(route('login'))->post(route('login.store'));
+
+        $response = $this->get(route('login'));
+
+        $response
+            ->assertSee('Please check the highlighted details and try again.')
+            ->assertSee('The email field is required.')
+            ->assertSee('The password field is required.');
+    }
+
     public function test_login_rejects_invalid_credentials(): void
     {
         $user = User::factory()->create([
@@ -41,14 +56,18 @@ class AuthenticatedSessionControllerTest extends TestCase
             'password' => 'correct-password',
         ]);
 
-        $response = $this->from(route('login'))->post(route('login.store'), [
-            'email' => $user->email,
-            'password' => 'incorrect-password',
-        ]);
+        $response = $this
+            ->followingRedirects()
+            ->from(route('login'))
+            ->post(route('login.store'), [
+                'email' => $user->email,
+                'password' => 'incorrect-password',
+            ]);
 
         $response
-            ->assertRedirect(route('login'))
-            ->assertSessionHasErrors('email', __('auth.failed'));
+            ->assertOk()
+            ->assertSee('Please check the highlighted details and try again.')
+            ->assertSee(__('auth.failed'));
 
         $this->assertGuest();
     }
@@ -58,6 +77,7 @@ class AuthenticatedSessionControllerTest extends TestCase
         $user = User::factory()->create([
             'email' => 'staff@busitema.ac.ug',
             'password' => 'correct-password',
+            'remember_token' => null,
         ]);
 
         $response = $this->post(route('login.store'), [
@@ -66,8 +86,61 @@ class AuthenticatedSessionControllerTest extends TestCase
             'remember' => true,
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response
+            ->assertRedirect(route('dashboard'))
+            ->assertCookie(Auth::guard('web')->getRecallerName());
 
         $this->assertAuthenticatedAs($user);
+        $this->assertNotNull($user->fresh()->remember_token);
+    }
+
+    public function test_authenticated_users_are_redirected_away_from_the_login_page(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('login'));
+
+        $response->assertRedirect(route('dashboard'));
+    }
+
+    #[DataProvider('internalRoutes')]
+    public function test_unauthenticated_users_are_redirected_to_login(string $routeName): void
+    {
+        $response = $this->get(route($routeName));
+
+        $response->assertRedirect(route('login'));
+
+        $this->assertGuest();
+    }
+
+    public function test_authenticated_user_can_log_out(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->withSession(['authentication-marker' => 'present'])
+            ->post(route('logout'));
+
+        $response
+            ->assertRedirect(route('login'))
+            ->assertSessionMissing('authentication-marker');
+
+        $this->assertGuest();
+        $this->get(route('dashboard'))->assertRedirect(route('login'));
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function internalRoutes(): array
+    {
+        return [
+            'dashboard' => ['dashboard'],
+            'estates dashboard' => ['estates.dashboard'],
+            'management dashboard' => ['management.dashboard'],
+            'campus dashboard' => ['campus.dashboard'],
+            'finance dashboard' => ['finance.dashboard'],
+        ];
     }
 }

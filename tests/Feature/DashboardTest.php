@@ -2,13 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
-    public function test_dashboard_design_preview_displays_the_complete_sidebar_without_authentication(): void
+    public function test_authenticated_user_sees_the_complete_dashboard_sidebar(): void
     {
-        $response = $this->get(route('dashboard'));
+        $user = User::factory()->make();
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
 
         $response
             ->assertOk()
@@ -49,7 +52,9 @@ class DashboardTest extends TestCase
 
     public function test_estates_dashboard_design_preview_displays_property_oversight_content(): void
     {
-        $response = $this->get(route('estates.dashboard'));
+        $user = User::factory()->make();
+
+        $response = $this->actingAs($user)->get(route('estates.dashboard'));
 
         $response
             ->assertOk()
@@ -100,7 +105,9 @@ class DashboardTest extends TestCase
 
     public function test_management_dashboard_design_preview_displays_executive_oversight_content(): void
     {
-        $response = $this->get(route('management.dashboard'));
+        $user = User::factory()->make();
+
+        $response = $this->actingAs($user)->get(route('management.dashboard'));
 
         $response
             ->assertOk()
@@ -147,7 +154,9 @@ class DashboardTest extends TestCase
 
     public function test_campus_dashboard_design_preview_displays_assigned_campus_operations(): void
     {
-        $response = $this->get(route('campus.dashboard'));
+        $user = User::factory()->make();
+
+        $response = $this->actingAs($user)->get(route('campus.dashboard'));
 
         $response
             ->assertOk()
@@ -200,7 +209,9 @@ class DashboardTest extends TestCase
 
     public function test_finance_dashboard_design_preview_displays_financial_operations(): void
     {
-        $response = $this->get(route('finance.dashboard'));
+        $user = User::factory()->make();
+
+        $response = $this->actingAs($user)->get(route('finance.dashboard'));
 
         $response
             ->assertOk()
