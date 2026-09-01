@@ -37,9 +37,9 @@
 
 @section('content')
     <div class="flex flex-col gap-6" x-data="{ period: 'Current financial year' }">
-        <section class="overflow-hidden rounded-2xl bg-busitema-deep-blue shadow-sm">
+        <section class="overflow-hidden rounded-2xl bg-busitema-blue shadow-sm">
             <div class="relative px-6 py-7 sm:px-8">
-                <div class="absolute inset-y-0 right-0 w-1/2 bg-linear-to-l from-busitema-blue/30 to-transparent" aria-hidden="true"></div>
+                <div class="absolute inset-y-0 right-0 w-1/2 bg-linear-to-l from-white/10 to-transparent" aria-hidden="true"></div>
                 <div class="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <div>
                         <p class="text-xs font-semibold tracking-[0.14em] text-busitema-gold uppercase">Property finance operations</p>

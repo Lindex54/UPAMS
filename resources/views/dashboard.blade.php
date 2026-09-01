@@ -5,9 +5,9 @@
 
 @section('content')
     <div class="flex flex-col gap-6">
-        <section class="overflow-hidden rounded-2xl bg-busitema-deep-blue shadow-sm">
+        <section class="overflow-hidden rounded-2xl bg-busitema-blue shadow-sm transition-colors dark:bg-blue-950">
             <div class="relative px-6 py-7 sm:px-8">
-                <div class="absolute -top-20 right-6 size-56 rounded-full bg-busitema-blue/30 blur-3xl" aria-hidden="true"></div>
+                <div class="absolute -top-20 right-6 size-56 rounded-full bg-white/10 blur-3xl" aria-hidden="true"></div>
                 <div class="absolute -right-12 -bottom-28 size-56 rounded-full bg-busitema-gold/15 blur-3xl" aria-hidden="true"></div>
                 <div class="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div>
@@ -58,7 +58,7 @@
             <article class="rounded-xl border border-border bg-white p-6 shadow-sm xl:col-span-2">
                 <div class="flex items-start justify-between gap-4"><div><h2 class="text-lg font-semibold text-heading">Assets by Category</h2><p class="mt-1 text-sm text-body-text">Portfolio composition</p></div><span class="text-xs font-semibold text-busitema-blue">12,684 total</span></div>
                 <div class="mt-6 flex flex-col items-center gap-6 sm:flex-row xl:flex-col 2xl:flex-row">
-                    <div class="relative size-44 shrink-0 rounded-full" role="img" aria-label="Donut chart showing the distribution of assets by category" style="background: conic-gradient(#1e73be 0 32%, #13294b 32% 56%, #f9d028 56% 73%, #10b981 73% 88%, #f97316 88% 100%);"><div class="absolute inset-8 flex flex-col items-center justify-center rounded-full bg-white"><span class="text-2xl font-semibold text-heading">12.7K</span><span class="text-xs text-body-text">assets</span></div></div>
+                    <div class="relative size-44 shrink-0 rounded-full" role="img" aria-label="Donut chart showing the distribution of assets by category" style="background: conic-gradient(#1e73be 0 32%, var(--chart-secondary-blue) 32% 56%, #f9d028 56% 73%, #10b981 73% 88%, #f97316 88% 100%);"><div class="absolute inset-8 flex flex-col items-center justify-center rounded-full bg-white"><span class="text-2xl font-semibold text-heading">12.7K</span><span class="text-xs text-body-text">assets</span></div></div>
                     <div class="grid w-full gap-3">
                         @foreach ([['Buildings & spaces', '32%', '4,059', 'bg-busitema-blue'], ['Equipment & machinery', '24%', '3,044', 'bg-busitema-deep-blue'], ['Furniture & fittings', '17%', '2,156', 'bg-busitema-gold'], ['Vehicles', '15%', '1,903', 'bg-emerald-500'], ['Land & other property', '12%', '1,522', 'bg-orange-500']] as [$category, $share, $count, $color])
                             <div class="flex items-center justify-between gap-3 text-sm"><span class="flex min-w-0 items-center gap-2 text-body-text"><span class="size-2.5 shrink-0 rounded-full {{ $color }}"></span><span class="truncate">{{ $category }}</span></span><span class="shrink-0 font-semibold text-heading">{{ $share }} <small class="font-normal text-body-text">· {{ $count }}</small></span></div>
@@ -71,7 +71,7 @@
                 <div class="flex items-start justify-between gap-4"><div><h2 class="text-lg font-semibold text-heading">Assets by Campus</h2><p class="mt-1 text-sm text-body-text">Registered assets across university locations</p></div><span class="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-busitema-blue">All campuses</span></div>
                 <div class="mt-7 flex h-56 items-end gap-3 border-b border-border sm:gap-5" role="img" aria-label="Bar chart showing registered assets by campus">
                     @foreach ([['Main', 92, '3,842'], ['Nagongera', 71, '2,874'], ['Arapai', 59, '2,316'], ['Namasagali', 43, '1,628'], ['Mbale', 33, '1,274'], ['Pallisa', 20, '750']] as [$campus, $height, $count])
-                        <div class="group flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"><span class="text-[0.65rem] font-semibold text-heading opacity-0 transition group-hover:opacity-100 sm:text-xs">{{ $count }}</span><div class="w-full max-w-12 rounded-t-md bg-busitema-blue transition group-hover:bg-busitema-deep-blue" style="height: {{ $height }}%"></div><span class="w-full truncate pb-2 text-center text-[0.62rem] text-body-text sm:text-xs">{{ $campus }}</span></div>
+                        <div class="group flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"><span class="text-[0.65rem] font-semibold text-heading opacity-0 transition group-hover:opacity-100 sm:text-xs">{{ $count }}</span><div class="w-full max-w-12 rounded-t-md bg-busitema-blue transition group-hover:bg-busitema-deep-blue dark:bg-sky-500 dark:group-hover:bg-sky-400" style="height: {{ $height }}%"></div><span class="w-full truncate pb-2 text-center text-[0.62rem] text-body-text sm:text-xs">{{ $campus }}</span></div>
                     @endforeach
                 </div>
             </article>

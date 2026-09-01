@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\BeneficiaryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserStatusController;
 use App\Http\Middleware\EnsureUserIsActive;
@@ -50,6 +52,70 @@ Route::middleware('auth')->group(function (): void {
                 'page' => 'show',
             ])->name("asset-management.{$assetManagementModule}.show");
         }
+
+        $operationsModules = [
+            'agreements',
+            'inspections',
+            'maintenance',
+            'documents',
+        ];
+
+        Route::view('/beneficiaries', 'operations.page', [
+            'module' => 'beneficiaries',
+            'page' => 'index',
+        ])->name('operations.beneficiaries.index');
+        Route::get('/beneficiaries/create', [BeneficiaryController::class, 'create'])->name('operations.beneficiaries.create');
+        Route::post('/beneficiaries', [BeneficiaryController::class, 'store'])->name('operations.beneficiaries.store');
+        Route::get('/beneficiaries/{record}/edit', [BeneficiaryController::class, 'edit'])->name('operations.beneficiaries.edit');
+        Route::put('/beneficiaries/{beneficiary}', [BeneficiaryController::class, 'update'])->name('operations.beneficiaries.update');
+        Route::view('/beneficiaries/{record}', 'operations.page', [
+            'module' => 'beneficiaries',
+            'page' => 'show',
+        ])->name('operations.beneficiaries.show');
+
+        Route::prefix('api/locations')->name('api.locations.')->group(function (): void {
+            Route::get('/districts/{district}/counties', [LocationController::class, 'counties'])->name('counties');
+            Route::get('/counties/{county}/sub-counties', [LocationController::class, 'subCounties'])->name('sub-counties');
+            Route::get('/sub-counties/{subCounty}/parishes', [LocationController::class, 'parishes'])->name('parishes');
+            Route::get('/parishes/{parish}/villages', [LocationController::class, 'villages'])->name('villages');
+        });
+
+        foreach ($operationsModules as $operationsModule) {
+            Route::view("/{$operationsModule}", 'operations.page', [
+                'module' => $operationsModule,
+                'page' => 'index',
+            ])->name("operations.{$operationsModule}.index");
+
+            Route::view("/{$operationsModule}/create", 'operations.page', [
+                'module' => $operationsModule,
+                'page' => 'create',
+            ])->name("operations.{$operationsModule}.create");
+
+            Route::view("/{$operationsModule}/{record}/edit", 'operations.page', [
+                'module' => $operationsModule,
+                'page' => 'edit',
+            ])->name("operations.{$operationsModule}.edit");
+
+            Route::view("/{$operationsModule}/{record}", 'operations.page', [
+                'module' => $operationsModule,
+                'page' => 'show',
+            ])->name("operations.{$operationsModule}.show");
+        }
+
+        Route::view('/agreements/{record}/approval', 'operations.page', [
+            'module' => 'agreements',
+            'page' => 'approval',
+        ])->name('operations.agreements.approval');
+
+        Route::view('/agreements/{record}/renewal', 'operations.page', [
+            'module' => 'agreements',
+            'page' => 'renewal',
+        ])->name('operations.agreements.renewal');
+
+        Route::view('/agreements/{record}/termination', 'operations.page', [
+            'module' => 'agreements',
+            'page' => 'termination',
+        ])->name('operations.agreements.termination');
 
         Route::view('/dashboard', 'dashboard')->name('dashboard');
         Route::view('/estates/dashboard', 'estates.dashboard')->name('estates.dashboard');

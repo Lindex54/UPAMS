@@ -9,7 +9,7 @@
     >
         <section class="hidden bg-busitema-blue px-10 py-12 text-white lg:flex lg:flex-col xl:px-16 xl:py-14">
             <div>
-                <div class="inline-flex rounded-2xl bg-white p-4 shadow-lg shadow-black/10">
+                <div class="theme-brand-surface inline-flex rounded-2xl bg-white p-4 shadow-lg shadow-black/10">
                     <img
                         class="h-auto w-64"
                         src="{{ asset('images/busitema-logo.png') }}"

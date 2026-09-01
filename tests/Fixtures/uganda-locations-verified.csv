@@ -1,0 +1,5 @@
+id,region,sub_region,district,county,constituency,subcounty,parish,village,confidence
+1,Western,Bunyoro,Hoima,Bugahya County,Bugahya County,Buhanika,Katereiga,Kasambya I,verified
+2,Western,Bunyoro,Hoima,Bugahya County,Bugahya County,Buhanika,Katereiga,Katereiga I,verified
+3,Western,Bunyoro,Hoima,Kigorobya County,Kigorobya County,Kigorobya,Kigorobya Parish,Kigorobya Central,verified
+4,Central,Kampala,Kampala,,Kampala Central Division,Kampala Central Division,Kisenyi Ward,Kisenyi I,verified

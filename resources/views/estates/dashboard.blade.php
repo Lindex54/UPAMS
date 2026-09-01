@@ -47,9 +47,9 @@
 
 @section('content')
     <div class="flex flex-col gap-6" x-data="{ campus: 'All campuses' }">
-        <section class="overflow-hidden rounded-2xl bg-busitema-deep-blue text-white shadow-sm">
+        <section class="overflow-hidden rounded-2xl bg-busitema-blue text-white shadow-sm">
             <div class="relative px-6 py-7 sm:px-8">
-                <div class="absolute -top-16 right-4 size-48 rounded-full bg-busitema-blue/35 blur-2xl" aria-hidden="true"></div>
+                <div class="absolute -top-16 right-4 size-48 rounded-full bg-white/10 blur-2xl" aria-hidden="true"></div>
                 <div class="absolute -right-8 -bottom-24 size-52 rounded-full bg-busitema-gold/15 blur-2xl" aria-hidden="true"></div>
                 <div class="relative flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
                     <div>
@@ -98,7 +98,7 @@
             <article class="rounded-xl border border-border bg-white p-6 shadow-sm xl:col-span-2">
                 <h2 class="text-lg font-semibold text-heading">Assets by Category</h2><p class="mt-1 text-sm text-body-text">Composition of registered assets</p>
                 <div class="mt-6 flex flex-col items-center gap-6 sm:flex-row xl:flex-col 2xl:flex-row">
-                    <div class="relative size-40 shrink-0 rounded-full" style="background: conic-gradient(#1e73be 0 36%, #13294b 36% 61%, #f9d028 61% 78%, #10b981 78% 91%, #f97316 91% 100%);"><div class="absolute inset-7 flex flex-col items-center justify-center rounded-full bg-white"><span class="text-2xl font-semibold text-heading">2,486</span><span class="text-xs text-body-text">assets</span></div></div>
+                    <div class="relative size-40 shrink-0 rounded-full" style="background: conic-gradient(#1e73be 0 36%, var(--chart-secondary-blue) 36% 61%, #f9d028 61% 78%, #10b981 78% 91%, #f97316 91% 100%);"><div class="absolute inset-7 flex flex-col items-center justify-center rounded-full bg-white"><span class="text-2xl font-semibold text-heading">2,486</span><span class="text-xs text-body-text">assets</span></div></div>
                     <div class="grid w-full gap-3">
                         @foreach ([['Buildings & spaces', '36%', 'bg-busitema-blue'], ['Equipment', '25%', 'bg-busitema-deep-blue'], ['Land parcels', '17%', 'bg-busitema-gold'], ['Vehicles', '13%', 'bg-emerald-500'], ['Other property', '9%', 'bg-orange-500']] as [$category, $share, $color])
                             <div class="flex items-center justify-between gap-3 text-sm"><span class="flex items-center gap-2 text-body-text"><span class="size-2.5 rounded-full {{ $color }}"></span>{{ $category }}</span><span class="font-semibold text-heading">{{ $share }}</span></div>

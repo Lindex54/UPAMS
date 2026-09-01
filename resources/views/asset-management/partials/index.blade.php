@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-6" x-data="{ filtersOpen: true }">
-    <section class="overflow-hidden rounded-2xl bg-busitema-deep-blue shadow-sm">
+    <section class="overflow-hidden rounded-2xl bg-busitema-blue shadow-sm">
         <div class="relative px-6 py-7 sm:px-8">
-            <div class="absolute -top-16 right-6 size-48 rounded-full bg-busitema-blue/30 blur-3xl" aria-hidden="true"></div>
+            <div class="absolute -top-16 right-6 size-48 rounded-full bg-white/10 blur-3xl" aria-hidden="true"></div>
             <div class="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <p class="text-xs font-semibold tracking-[0.14em] text-busitema-gold uppercase">Asset Management</p>

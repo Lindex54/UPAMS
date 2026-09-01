@@ -1,9 +1,9 @@
 <div class="mx-auto flex max-w-7xl flex-col gap-6">
     <nav class="flex flex-wrap items-center gap-2 text-sm text-body-text" aria-label="Breadcrumb"><a class="font-medium hover:text-busitema-blue" href="{{ route("asset-management.{$module}.index") }}">{{ $design['title'] }}</a><span aria-hidden="true">/</span><span class="font-semibold text-heading">{{ $record['reference'] }}</span></nav>
 
-    <section class="overflow-hidden rounded-2xl bg-busitema-deep-blue shadow-sm">
+    <section class="overflow-hidden rounded-2xl bg-busitema-blue shadow-sm">
         <div class="relative px-6 py-7 sm:px-8">
-            <div class="absolute -top-16 right-4 size-52 rounded-full bg-busitema-blue/30 blur-3xl" aria-hidden="true"></div>
+            <div class="absolute -top-16 right-4 size-52 rounded-full bg-white/10 blur-3xl" aria-hidden="true"></div>
             <div class="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 <div><div class="flex flex-wrap items-center gap-3"><p class="text-xs font-semibold tracking-[0.14em] text-busitema-gold uppercase">{{ $design['singular'] }} · {{ $record['reference'] }}</p><span class="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-white">{{ $record['status'] }}</span></div><h2 class="mt-3 text-2xl font-semibold text-white sm:text-3xl">{{ $record['name'] }}</h2><p class="mt-2 text-sm text-white/70">{{ $record['campus'] }} · {{ $record['primary'] }}</p></div>
                 <div class="flex flex-wrap gap-3"><button class="inline-flex min-h-11 items-center rounded-lg border border-white/20 bg-white/10 px-4 text-sm font-semibold text-white transition hover:bg-white/15" type="button">Print record</button><a class="inline-flex min-h-11 items-center rounded-lg bg-busitema-gold px-5 text-sm font-semibold text-busitema-navy transition hover:bg-busitema-yellow" href="{{ route("asset-management.{$module}.edit", ['record' => $record['reference']]) }}">Edit {{ $design['singular'] }}</a></div>

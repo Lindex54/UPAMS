@@ -41,9 +41,9 @@
 
 @section('content')
     <div class="flex flex-col gap-6" x-data="{ period: 'This financial year' }">
-        <section class="overflow-hidden rounded-2xl bg-busitema-deep-blue shadow-sm">
+        <section class="overflow-hidden rounded-2xl bg-busitema-blue shadow-sm">
             <div class="relative px-6 py-7 sm:px-8">
-                <div class="absolute top-0 right-0 h-full w-2/5 bg-linear-to-l from-busitema-blue/25 to-transparent" aria-hidden="true"></div>
+                <div class="absolute top-0 right-0 h-full w-2/5 bg-linear-to-l from-white/10 to-transparent" aria-hidden="true"></div>
                 <div class="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <div>
                         <p class="text-sm font-semibold tracking-[0.14em] text-busitema-gold uppercase">Executive property brief</p>
@@ -90,7 +90,7 @@
             <article class="rounded-xl border border-border bg-white p-6 shadow-sm xl:col-span-2">
                 <h2 class="text-lg font-semibold text-heading">Asset Distribution</h2><p class="mt-1 text-sm text-body-text">Portfolio value by major category</p>
                 <div class="mt-6 flex flex-col items-center gap-6 sm:flex-row xl:flex-col 2xl:flex-row">
-                    <div class="relative size-40 shrink-0 rounded-full" style="background: conic-gradient(#13294b 0 43%, #1e73be 43% 69%, #f9d028 69% 83%, #10b981 83% 93%, #f97316 93% 100%);"><div class="absolute inset-7 flex flex-col items-center justify-center rounded-full bg-white"><span class="text-xl font-semibold text-heading">UGX</span><span class="text-sm text-body-text">418.6B</span></div></div>
+                    <div class="relative size-40 shrink-0 rounded-full" style="background: conic-gradient(var(--chart-secondary-blue) 0 43%, #1e73be 43% 69%, #f9d028 69% 83%, #10b981 83% 93%, #f97316 93% 100%);"><div class="absolute inset-7 flex flex-col items-center justify-center rounded-full bg-white"><span class="text-xl font-semibold text-heading">UGX</span><span class="text-sm text-body-text">418.6B</span></div></div>
                     <div class="grid w-full gap-3">
                         @foreach ([['Buildings', '43%', 'bg-busitema-deep-blue'], ['Land', '26%', 'bg-busitema-blue'], ['Equipment', '14%', 'bg-busitema-gold'], ['Vehicles', '10%', 'bg-emerald-500'], ['Other', '7%', 'bg-orange-500']] as [$category, $share, $color])
                             <div class="flex items-center justify-between text-sm"><span class="flex items-center gap-2 text-body-text"><span class="size-2.5 rounded-full {{ $color }}"></span>{{ $category }}</span><span class="font-semibold text-heading">{{ $share }}</span></div>

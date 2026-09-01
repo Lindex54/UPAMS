@@ -19,11 +19,11 @@
             ['label' => 'Agricultural Property', 'href' => url('/agricultural-property'), 'pattern' => 'agricultural-property*'],
         ]],
         ['label' => 'Operations', 'items' => [
-            ['label' => 'Agreements & Allocations', 'href' => url('/agreements'), 'pattern' => 'agreements*'],
-            ['label' => 'Tenants/Beneficiaries', 'href' => url('/beneficiaries'), 'pattern' => 'beneficiaries*'],
-            ['label' => 'Inspections', 'href' => url('/inspections'), 'pattern' => 'inspections*'],
-            ['label' => 'Maintenance', 'href' => url('/maintenance'), 'pattern' => 'maintenance*'],
-            ['label' => 'Documents', 'href' => url('/documents'), 'pattern' => 'documents*'],
+            ['label' => 'Agreements & Allocations', 'href' => route('operations.agreements.index'), 'pattern' => 'agreements*'],
+            ['label' => 'Tenants/Beneficiaries', 'href' => route('operations.beneficiaries.index'), 'pattern' => 'beneficiaries*'],
+            ['label' => 'Inspections', 'href' => route('operations.inspections.index'), 'pattern' => 'inspections*'],
+            ['label' => 'Maintenance', 'href' => route('operations.maintenance.index'), 'pattern' => 'maintenance*'],
+            ['label' => 'Documents', 'href' => route('operations.documents.index'), 'pattern' => 'documents*'],
         ]],
         ['label' => 'Finance & Utilities', 'items' => [
             ['label' => 'Billing & Invoices', 'href' => url('/billing'), 'pattern' => 'billing*'],
@@ -49,11 +49,11 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'contents']) }}>
-    <header class="fixed inset-x-0 top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-white px-4 shadow-sm lg:hidden">
+    <header class="fixed inset-x-0 top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-white px-4 shadow-sm dark:border-slate-700 dark:bg-slate-900 lg:hidden">
         <img class="h-auto w-44" src="{{ asset('images/busitema-logo.png') }}" alt="Busitema University">
 
         <button
-            class="inline-flex size-10 items-center justify-center rounded-lg text-busitema-deep-blue transition hover:bg-light-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-busitema-blue"
+            class="inline-flex size-10 items-center justify-center rounded-lg text-busitema-deep-blue transition hover:bg-light-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-busitema-blue dark:text-sky-300 dark:hover:bg-slate-800"
             type="button"
             @click="sidebarOpen = true"
             aria-label="Open navigation"
@@ -77,7 +77,7 @@
 
     <aside
         id="{{ $sidebarId }}"
-        class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-busitema-blue shadow-xl transition-[width,transform] duration-200 ease-out lg:translate-x-0 lg:shadow-none"
+        class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-busitema-blue shadow-xl transition-[width,transform,background-color] duration-200 ease-out dark:bg-slate-950 lg:translate-x-0 lg:shadow-none"
         :class="[
             sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
             sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'
@@ -86,7 +86,7 @@
     >
         <div class="flex min-h-24 items-center gap-3 border-b border-white/15 px-4 py-4">
             <div
-                class="min-w-0 flex-1 overflow-hidden rounded-xl bg-white p-3"
+                class="theme-brand-surface min-w-0 flex-1 overflow-hidden rounded-xl bg-white p-3"
                 :class="sidebarCollapsed && ! sidebarOpen ? 'lg:p-2' : ''"
             >
                 <img
@@ -140,7 +140,7 @@
                                         title="{{ $item['label'] }}"
                                         @class([
                                             'group flex min-h-10 items-center gap-3 rounded-lg border-l-4 px-3 py-2 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
-                                            'border-busitema-gold bg-white text-busitema-blue shadow-sm' => $isActive,
+                                            'border-busitema-gold bg-white text-busitema-blue shadow-sm dark:bg-slate-800 dark:text-sky-300' => $isActive,
                                             'border-transparent text-white/85 hover:bg-white/10 hover:text-white' => ! $isActive,
                                         ])
                                         @if ($isActive) aria-current="page" @endif

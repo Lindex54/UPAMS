@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-color" content="#f5f8fc">
+
+        <x-theme-script />
 
         <title>@yield('title', 'UPAMS')</title>
 
@@ -38,6 +41,8 @@
                 </div>
 
                 <div class="flex items-center gap-3">
+                    <x-theme-toggle />
+
                     <div class="hidden items-center gap-3 sm:flex">
                         <div class="text-right">
                             <p class="text-sm font-semibold text-heading">{{ auth()->user()->name }}</p>
