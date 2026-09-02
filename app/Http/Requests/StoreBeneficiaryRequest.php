@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Beneficiary;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -23,12 +24,25 @@ class StoreBeneficiaryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $beneficiary = $this->route('beneficiary');
+
         return [
             'full_name_organization' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::in(['Commercial Tenant', 'Staff Tenant', 'Student Beneficiary', 'University Unit', 'External Partner'])],
             'contact_person' => ['nullable', 'string', 'max:255'],
             'telephone' => ['required', 'string', 'max:30', 'regex:/^\+?[0-9\s().-]{7,30}$/'],
             'email' => ['nullable', 'string', 'email', 'max:255'],
+            'nin' => ['nullable', 'string', 'min:8', 'max:30', 'regex:/^[A-Z0-9]+$/'],
+            'nin_hash' => [
+                'nullable',
+                'string',
+                'size:64',
+                Rule::unique('beneficiaries', 'nin_hash')->ignore($beneficiary instanceof Beneficiary ? $beneficiary->getKey() : null),
+            ],
+            'national_id_given_names' => ['required', 'string', 'max:255'],
+            'national_id_surname' => ['required', 'string', 'max:255'],
+            'national_id_sex' => ['nullable', Rule::in(['Male', 'Female'])],
+            'nationality' => ['nullable', 'string', 'max:100'],
             'district_id' => ['required', 'integer', Rule::exists('districts', 'id')->where('is_active', true)],
             'county_id' => ['required', 'integer', Rule::exists('counties', 'id')->where(fn ($query) => $query->where('district_id', $this->integer('district_id'))->where('is_active', true))],
             'sub_county_id' => ['required', 'integer', Rule::exists('sub_counties', 'id')->where(fn ($query) => $query->where('county_id', $this->integer('county_id'))->where('is_active', true))],
@@ -56,14 +70,22 @@ class StoreBeneficiaryRequest extends FormRequest
             'physical_address_landmark' => 'physical address / landmark',
             'campus_id' => 'campus',
             'record_status' => 'record status',
+            'nin' => 'national identification number (NIN)',
+            'nin_hash' => 'national identification number (NIN)',
+            'national_id_given_names' => 'first name',
+            'national_id_surname' => 'last name',
         ];
     }
 
     protected function prepareForValidation(): void
     {
+        $nin = Str::upper(preg_replace('/[\s-]+/', '', $this->string('nin')->toString()) ?? '');
+
         $this->merge([
             'email' => Str::lower(trim($this->string('email')->toString())) ?: null,
             'telephone' => trim($this->string('telephone')->toString()),
+            'nin' => $nin ?: null,
+            'nin_hash' => $nin ? hash('sha256', $nin) : null,
         ]);
     }
 }

@@ -67,6 +67,11 @@ class BeneficiaryController extends Controller
     public function update(UpdateBeneficiaryRequest $request, Beneficiary $beneficiary): RedirectResponse
     {
         $attributes = $request->validated();
+
+        if (blank($attributes['nin'] ?? null)) {
+            unset($attributes['nin'], $attributes['nin_hash']);
+        }
+
         $attributes['updated_by'] = $request->user()?->id;
         $beneficiary->update($attributes);
 

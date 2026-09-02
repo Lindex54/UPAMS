@@ -73,6 +73,9 @@
                         @error($fieldName)<span class="text-xs font-normal text-red-600">{{ $message }}</span>@enderror
                     </label>
                 @endforeach
+                @if ($isPersistentBeneficiary)
+                    @include('operations.partials.beneficiary-national-identification-fields')
+                @endif
             </div>
         </section>
 

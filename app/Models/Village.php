@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/** Village or cell at the leaf of the stored administrative hierarchy. */
 #[Fillable(['parish_id', 'name', 'code', 'is_active'])]
 class Village extends Model
 {

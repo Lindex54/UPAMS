@@ -2,6 +2,7 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
+// Coordinate the dependent District-to-Village dropdowns against the application's local APIs.
 Alpine.data('ugandaLocationSelector', (configuration) => ({
     selected: {
         district: String(configuration.selected.district ?? ''),
@@ -18,6 +19,7 @@ Alpine.data('ugandaLocationSelector', (configuration) => ({
     },
     loading: { counties: false, subCounties: false, parishes: false, villages: false },
     messages: { counties: '', subCounties: '', parishes: '', villages: '' },
+    // Per-level counters prevent a slower, outdated response from replacing a newer selection.
     requestSequence: { counties: 0, subCounties: 0, parishes: 0, villages: 0 },
 
     districtChanged() {
@@ -59,6 +61,9 @@ Alpine.data('ugandaLocationSelector', (configuration) => ({
         });
     },
 
+    /**
+     * Load active children for one parent from a database-backed Laravel endpoint.
+     */
     async load(level, urlTemplate, parentId) {
         if (!parentId) {
             return;
@@ -80,6 +85,7 @@ Alpine.data('ugandaLocationSelector', (configuration) => ({
 
             const payload = await response.json();
 
+            // Ignore a response when the user changed the parent while its request was in flight.
             if (sequence !== this.requestSequence[level]) {
                 return;
             }

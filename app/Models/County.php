@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/** County or constituency belonging to a district and containing sub-counties. */
 #[Fillable(['district_id', 'name', 'code', 'is_active'])]
 class County extends Model
 {

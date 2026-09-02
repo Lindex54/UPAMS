@@ -10,9 +10,17 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use SplFileObject;
 
+/**
+ * Import a flat CSV into the District-to-Village relational hierarchy.
+ *
+ * The importer resolves or creates every parent before its child so each database row
+ * retains the correct administrative lineage.
+ */
 class UgandaLocationCsvImporter
 {
     /**
+     * Import readable, verified location rows in one atomic database transaction.
+     *
      * @return array{districts: int, counties: int, sub_counties: int, parishes: int, villages: int}
      */
     public function import(string $path): array
@@ -22,6 +30,7 @@ class UgandaLocationCsvImporter
         }
 
         return DB::transaction(function () use ($path): array {
+            // Cache resolved IDs by their parent path to avoid querying the same hierarchy repeatedly.
             $districtIds = [];
             $countyIds = [];
             $subCountyIds = [];
@@ -65,6 +74,7 @@ class UgandaLocationCsvImporter
                 $parishName = $this->requiredName($row, 'parish', $file->key());
                 $villageName = $this->requiredName($row, 'village', $file->key());
 
+                // Unverified source rows are intentionally excluded from operational dropdowns.
                 if (($row['confidence'] ?? null) !== 'verified') {
                     continue;
                 }
@@ -98,6 +108,7 @@ class UgandaLocationCsvImporter
                     'updated_at' => $timestamp,
                 ];
 
+                // Batch leaf records to keep memory and database round trips bounded for the large village set.
                 if (count($villageBuffer) === 500) {
                     $insertedVillages += DB::table('villages')->insertOrIgnore($villageBuffer);
                     $villageBuffer = [];
@@ -118,7 +129,11 @@ class UgandaLocationCsvImporter
         });
     }
 
-    /** @param array<string, string|null> $row */
+    /**
+     * Use the constituency name when the source has no separate county value.
+     *
+     * @param  array<string, string|null>  $row
+     */
     private function countyName(array $row, int $line): string
     {
         $county = trim((string) ($row['county'] ?? ''));
@@ -126,7 +141,11 @@ class UgandaLocationCsvImporter
         return $county !== '' ? $county : $this->requiredName($row, 'constituency', $line);
     }
 
-    /** @param array<string, string|null> $row */
+    /**
+     * Normalize a required source value and identify its CSV line when invalid.
+     *
+     * @param  array<string, string|null>  $row
+     */
     private function requiredName(array $row, string $column, int $line): string
     {
         $name = trim((string) ($row[$column] ?? ''));

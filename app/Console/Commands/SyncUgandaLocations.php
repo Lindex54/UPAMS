@@ -11,12 +11,18 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
+/**
+ * Download the pinned Uganda location dataset and persist it for local application use.
+ *
+ * Form selections never invoke this command; administrators run it only when the stored
+ * location hierarchy needs to be installed or refreshed.
+ */
 #[Signature('locations:sync-uganda {--keep-file : Keep the downloaded CSV in local storage after import}')]
 #[Description('Download and import the verified Uganda administrative-location hierarchy')]
 class SyncUgandaLocations extends Command
 {
     /**
-     * Execute the console command.
+     * Synchronize the remote CSV into the local hierarchy tables.
      */
     public function handle(UgandaLocationCsvImporter $importer): int
     {
@@ -36,6 +42,7 @@ class SyncUgandaLocations extends Command
                 ->throw();
             $contents = $response->body();
 
+            // Reject altered or incomplete downloads before they can change production location records.
             if (! hash_equals($expectedHash, hash('sha256', $contents))) {
                 $this->components->error('The downloaded dataset failed its SHA-256 integrity check. Nothing was imported.');
 
@@ -50,6 +57,7 @@ class SyncUgandaLocations extends Command
 
             return self::FAILURE;
         } finally {
+            // The downloaded source is temporary unless an administrator explicitly requests an audit copy.
             if (! $this->option('keep-file')) {
                 Storage::disk('local')->delete($storagePath);
             }
@@ -65,6 +73,9 @@ class SyncUgandaLocations extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * Remove the original development-only hierarchy before importing authoritative records.
+     */
     private function removeLegacyDevelopmentPlaceholder(): void
     {
         DB::transaction(function (): void {

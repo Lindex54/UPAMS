@@ -1,4 +1,5 @@
 @php
+    // Preserve the selected hierarchy after validation errors and while editing an existing beneficiary.
     $selectedLocations = [
         'district' => (string) old('district_id', $beneficiaryRecord?->district_id ?? ''),
         'county' => (string) old('county_id', $beneficiaryRecord?->county_id ?? ''),
@@ -8,6 +9,7 @@
     ];
 @endphp
 
+{{-- Districts are rendered initially; the remaining options are loaded from local database-backed endpoints. --}}
 <section
     class="rounded-xl border border-border bg-white p-6 shadow-sm sm:p-8"
     x-data="ugandaLocationSelector(@js([
@@ -31,7 +33,6 @@
         <h2 class="mt-1.5 text-xl font-semibold text-heading">District to village</h2>
         <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p class="text-sm text-body-text">Choose each level in order. Changing a parent automatically clears all selections below it.</p>
-            <a class="inline-flex w-fit items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 transition hover:text-emerald-600" href="{{ config('uganda_locations.official_source_url') }}" target="_blank" rel="noreferrer">EC verified register · July 2022</a>
         </div>
     </div>
 

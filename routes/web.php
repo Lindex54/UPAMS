@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function (): void {
             'page' => 'show',
         ])->name('operations.beneficiaries.show');
 
+        // These local JSON endpoints read child options from the database as each parent is selected.
         Route::prefix('api/locations')->name('api.locations.')->group(function (): void {
             Route::get('/districts/{district}/counties', [LocationController::class, 'counties'])->name('counties');
             Route::get('/counties/{county}/sub-counties', [LocationController::class, 'subCounties'])->name('sub-counties');

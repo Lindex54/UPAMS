@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** Convert a location model into the minimal option shape consumed by the dropdowns. */
 class LocationOptionResource extends JsonResource
 {
     /**

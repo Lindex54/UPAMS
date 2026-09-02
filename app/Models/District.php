@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/** Top-level administrative unit and parent of the stored county hierarchy. */
 #[Fillable(['name', 'code', 'is_active'])]
 class District extends Model
 {

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/** Parish or ward belonging to a sub-county and containing villages. */
 #[Fillable(['sub_county_id', 'name', 'code', 'is_active'])]
 class Parish extends Model
 {

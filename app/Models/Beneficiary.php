@@ -4,17 +4,21 @@ namespace App\Models;
 
 use Database\Factories\BeneficiaryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'reference', 'full_name_organization', 'category', 'contact_person', 'telephone', 'email',
+    'nin', 'nin_hash', 'national_id_given_names', 'national_id_surname',
+    'national_id_sex', 'nationality',
     'district_id', 'county_id', 'sub_county_id', 'parish_id', 'village_id',
     'physical_address_landmark', 'current_property_allocation', 'agreement_reference',
     'billing_cycle', 'opening_balance', 'campus_id', 'record_status', 'responsible_unit',
     'record_owner', 'administrative_notes', 'created_by', 'updated_by',
 ])]
+#[Hidden(['nin', 'nin_hash'])]
 class Beneficiary extends Model
 {
     /** @use HasFactory<BeneficiaryFactory> */
@@ -62,6 +66,9 @@ class Beneficiary extends Model
 
     protected function casts(): array
     {
-        return ['opening_balance' => 'decimal:2'];
+        return [
+            'nin' => 'encrypted',
+            'opening_balance' => 'decimal:2',
+        ];
     }
 }

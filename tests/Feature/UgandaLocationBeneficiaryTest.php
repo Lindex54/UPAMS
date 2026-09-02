@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Village;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -67,6 +68,8 @@ class UgandaLocationBeneficiaryTest extends TestCase
             'category' => 'Student Beneficiary',
             'telephone' => '+256 700 000 001',
             'email' => '',
+            'national_id_given_names' => 'Development',
+            'national_id_surname' => 'Beneficiary',
             'district_id' => $district->id,
             'county_id' => $county->id,
             'sub_county_id' => $subCounty->id,
@@ -97,6 +100,8 @@ class UgandaLocationBeneficiaryTest extends TestCase
             'full_name_organization' => 'Invalid Location Beneficiary',
             'category' => 'External Partner',
             'telephone' => '+256 700 000 002',
+            'national_id_given_names' => 'Invalid Location',
+            'national_id_surname' => 'Beneficiary',
             'district_id' => $district->id,
             'county_id' => $countyFromAnotherDistrict->id,
             'sub_county_id' => $subCounty->id,
@@ -107,6 +112,123 @@ class UgandaLocationBeneficiaryTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors('county_id');
+        $this->assertDatabaseCount('beneficiaries', 0);
+    }
+
+    public function test_national_identification_details_are_captured_and_the_nin_is_encrypted(): void
+    {
+        $administrator = User::factory()->create();
+        $campus = Campus::factory()->create();
+        [$district, $county, $subCounty, $parish, $village] = $this->locationHierarchy();
+        $nin = 'CF000000000001';
+
+        $response = $this->actingAs($administrator)->post(route('operations.beneficiaries.store'), [
+            'full_name_organization' => 'Amina Namukasa',
+            'category' => 'Staff Tenant',
+            'telephone' => '+256 700 000 003',
+            'nin' => 'cf00 0000-0000 01',
+            'national_id_surname' => 'Namukasa',
+            'national_id_given_names' => 'Amina',
+            'national_id_sex' => 'Female',
+            'nationality' => 'Ugandan',
+            'district_id' => $district->id,
+            'county_id' => $county->id,
+            'sub_county_id' => $subCounty->id,
+            'parish_id' => $parish->id,
+            'village_id' => $village->id,
+            'campus_id' => $campus->id,
+            'record_status' => 'Active',
+        ]);
+
+        $beneficiary = Beneficiary::sole();
+        $rawNin = DB::table('beneficiaries')->where('id', $beneficiary->id)->value('nin');
+
+        $response->assertRedirect(route('operations.beneficiaries.edit', $beneficiary->reference));
+        $this->assertSame($nin, $beneficiary->nin);
+        $this->assertNotSame($nin, $rawNin);
+        $this->assertSame(hash('sha256', $nin), $beneficiary->nin_hash);
+        $this->assertSame('Namukasa', $beneficiary->national_id_surname);
+        $this->assertSame('Amina', $beneficiary->national_id_given_names);
+        $this->assertSame('Female', $beneficiary->national_id_sex);
+        $this->assertSame('Ugandan', $beneficiary->nationality);
+    }
+
+    public function test_duplicate_nin_is_rejected_after_normalization(): void
+    {
+        $administrator = User::factory()->create();
+        $nin = 'CM000000000001';
+        Beneficiary::factory()->create([
+            'nin' => $nin,
+            'nin_hash' => hash('sha256', $nin),
+        ]);
+        $campus = Campus::factory()->create();
+        [$district, $county, $subCounty, $parish, $village] = $this->locationHierarchy();
+
+        $response = $this->actingAs($administrator)->post(route('operations.beneficiaries.store'), [
+            'full_name_organization' => 'Duplicate Identity Beneficiary',
+            'category' => 'Student Beneficiary',
+            'telephone' => '+256 700 000 004',
+            'nin' => 'cm00-0000-0000-01',
+            'national_id_given_names' => 'Duplicate',
+            'national_id_surname' => 'Beneficiary',
+            'district_id' => $district->id,
+            'county_id' => $county->id,
+            'sub_county_id' => $subCounty->id,
+            'parish_id' => $parish->id,
+            'village_id' => $village->id,
+            'campus_id' => $campus->id,
+            'record_status' => 'Active',
+        ]);
+
+        $response->assertSessionHasErrors('nin_hash');
+        $this->assertDatabaseCount('beneficiaries', 1);
+    }
+
+    public function test_edit_form_masks_the_stored_nin_and_displays_identity_fields(): void
+    {
+        $administrator = User::factory()->create();
+        $nin = 'CF000000009876';
+        $beneficiary = Beneficiary::factory()->create([
+            'nin' => $nin,
+            'nin_hash' => hash('sha256', $nin),
+            'national_id_surname' => 'Atim',
+        ]);
+
+        $response = $this->actingAs($administrator)->get(route('operations.beneficiaries.edit', $beneficiary->reference));
+
+        $response
+            ->assertOk()
+            ->assertSee('First Name')
+            ->assertSee('Last Name')
+            ->assertSee('NIN ending in 9876')
+            ->assertSee('Atim')
+            ->assertDontSee('Card Number')
+            ->assertDontSee('Date of Birth')
+            ->assertDontSee('Date of Issue')
+            ->assertDontSee('Date of Expiry')
+            ->assertDontSee($nin);
+    }
+
+    public function test_first_and_last_name_are_required_while_nin_remains_optional(): void
+    {
+        $administrator = User::factory()->create();
+        $campus = Campus::factory()->create();
+        [$district, $county, $subCounty, $parish, $village] = $this->locationHierarchy();
+
+        $response = $this->actingAs($administrator)->post(route('operations.beneficiaries.store'), [
+            'full_name_organization' => 'Missing Required Names',
+            'category' => 'Student Beneficiary',
+            'telephone' => '+256 700 000 005',
+            'district_id' => $district->id,
+            'county_id' => $county->id,
+            'sub_county_id' => $subCounty->id,
+            'parish_id' => $parish->id,
+            'village_id' => $village->id,
+            'campus_id' => $campus->id,
+            'record_status' => 'Active',
+        ]);
+
+        $response->assertSessionHasErrors(['national_id_given_names', 'national_id_surname']);
         $this->assertDatabaseCount('beneficiaries', 0);
     }
 

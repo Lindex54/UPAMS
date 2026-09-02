@@ -155,7 +155,7 @@
                         </div>
 
                         <button
-                            class="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-busitema-gold px-5 py-3 text-base font-semibold text-busitema-navy shadow-sm transition hover:bg-busitema-yellow focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-busitema-blue active:translate-y-px"
+                            class="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-lg bg-busitema-gold px-5 py-3 text-base font-semibold text-busitema-navy shadow-sm transition hover:bg-busitema-yellow focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-busitema-blue active:translate-y-px"
                             type="submit"
                         >
                             Sign in to UPAMS

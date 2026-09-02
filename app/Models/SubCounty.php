@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/** Sub-county or division belonging to a county and containing parishes. */
 #[Fillable(['county_id', 'name', 'code', 'is_active'])]
 class SubCounty extends Model
 {
