@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'reference', 'full_name_organization', 'category', 'contact_person', 'telephone', 'email',
     'nin', 'nin_hash', 'national_id_given_names', 'national_id_surname',
-    'national_id_sex', 'nationality',
+    'national_id_sex', 'nationality', 'photo_path',
     'district_id', 'county_id', 'sub_county_id', 'parish_id', 'village_id',
     'physical_address_landmark', 'current_property_allocation', 'agreement_reference',
     'billing_cycle', 'opening_balance', 'campus_id', 'record_status', 'responsible_unit',

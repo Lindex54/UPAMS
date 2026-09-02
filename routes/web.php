@@ -3,6 +3,14 @@
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\BeneficiaryController;
+use App\Http\Controllers\Finance\ArrearsController;
+use App\Http\Controllers\Finance\InvoiceController;
+use App\Http\Controllers\Finance\PaymentController;
+use App\Http\Controllers\Finance\UtilityController;
+use App\Http\Controllers\Governance\ApprovalController;
+use App\Http\Controllers\Governance\AuditTrailController;
+use App\Http\Controllers\Governance\NotificationController;
+use App\Http\Controllers\Governance\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserStatusController;
 use App\Http\Middleware\EnsureUserIsActive;
@@ -20,6 +28,42 @@ Route::middleware('auth')->group(function (): void {
     Route::middleware(EnsureUserIsActive::class)->group(function (): void {
         Route::patch('/users/{user}/status', UserStatusController::class)->name('users.status.update');
         Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+
+        Route::get('/billing/export', [InvoiceController::class, 'export'])->name('billing.export');
+        Route::patch('/billing/{invoice}/archive', [InvoiceController::class, 'archive'])->name('billing.archive');
+        Route::resource('billing', InvoiceController::class)->parameters(['billing' => 'invoice'])->except(['destroy']);
+
+        Route::get('/payments/export', [PaymentController::class, 'export'])->name('payments.export');
+        Route::patch('/payments/{payment}/reverse', [PaymentController::class, 'reverse'])->name('payments.reverse');
+        Route::resource('payments', PaymentController::class)->only(['index', 'create', 'store', 'show']);
+
+        Route::get('/arrears/export', [ArrearsController::class, 'export'])->name('arrears.export');
+        Route::get('/arrears/{invoice}/statement', [ArrearsController::class, 'statement'])->name('arrears.statement');
+        Route::get('/arrears', [ArrearsController::class, 'index'])->name('arrears.index');
+
+        Route::get('/utilities/export', [UtilityController::class, 'export'])->name('utilities.export');
+        Route::get('/utilities/meters/create', [UtilityController::class, 'createMeter'])->name('utilities.meters.create');
+        Route::post('/utilities/meters', [UtilityController::class, 'storeMeter'])->name('utilities.meters.store');
+        Route::post('/utilities/types', [UtilityController::class, 'storeType'])->name('utilities.types.store');
+        Route::post('/utilities/readings', [UtilityController::class, 'storeReading'])->name('utilities.readings.store');
+        Route::get('/utilities/{meter}', [UtilityController::class, 'show'])->name('utilities.show');
+        Route::get('/utilities', [UtilityController::class, 'index'])->name('utilities.index');
+
+        Route::get('/approvals/export', [ApprovalController::class, 'export'])->name('approvals.export');
+        Route::patch('/approvals/{approval}/decision', [ApprovalController::class, 'decide'])->name('approvals.decide');
+        Route::resource('approvals', ApprovalController::class)->only(['index', 'create', 'store', 'show']);
+
+        Route::post('/notifications/templates', [NotificationController::class, 'storeTemplate'])->name('notifications.templates.store');
+        Route::patch('/notifications/{notification}/resend', [NotificationController::class, 'resend'])->name('notifications.resend');
+        Route::resource('notifications', NotificationController::class)->only(['index', 'create', 'store']);
+
+        Route::get('/reports/{report}/export', [ReportController::class, 'export'])->name('reports.export');
+        Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+        Route::get('/audit-trail/export', [AuditTrailController::class, 'export'])->name('audit-trail.export');
+        Route::get('/audit-trail/{auditLog}', [AuditTrailController::class, 'show'])->name('audit-trail.show');
+        Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('audit-trail.index');
 
         $assetManagementModules = [
             'assets',

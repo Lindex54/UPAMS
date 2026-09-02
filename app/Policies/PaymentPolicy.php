@@ -12,7 +12,7 @@ class PaymentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->is_active;
     }
 
     /**
@@ -20,7 +20,7 @@ class PaymentPolicy
      */
     public function view(User $user, Payment $payment): bool
     {
-        return false;
+        return $user->is_active;
     }
 
     /**
@@ -28,7 +28,7 @@ class PaymentPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->is_active;
     }
 
     /**
@@ -36,7 +36,7 @@ class PaymentPolicy
      */
     public function update(User $user, Payment $payment): bool
     {
-        return false;
+        return $user->is_active;
     }
 
     /**

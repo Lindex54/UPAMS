@@ -43,6 +43,7 @@ class StoreBeneficiaryRequest extends FormRequest
             'national_id_surname' => ['required', 'string', 'max:255'],
             'national_id_sex' => ['nullable', Rule::in(['Male', 'Female'])],
             'nationality' => ['nullable', 'string', 'max:100'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'district_id' => ['required', 'integer', Rule::exists('districts', 'id')->where('is_active', true)],
             'county_id' => ['required', 'integer', Rule::exists('counties', 'id')->where(fn ($query) => $query->where('district_id', $this->integer('district_id'))->where('is_active', true))],
             'sub_county_id' => ['required', 'integer', Rule::exists('sub_counties', 'id')->where(fn ($query) => $query->where('county_id', $this->integer('county_id'))->where('is_active', true))],
@@ -74,6 +75,7 @@ class StoreBeneficiaryRequest extends FormRequest
             'nin_hash' => 'national identification number (NIN)',
             'national_id_given_names' => 'first name',
             'national_id_surname' => 'last name',
+            'photo' => "person's photo",
         ];
     }
 

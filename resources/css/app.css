@@ -53,6 +53,7 @@
 @layer base {
     html {
         background-color: var(--light-background);
+        color-scheme: light;
     }
 
     html,
@@ -72,6 +73,7 @@
         --field-background: #0f172a;
         --chart-grid-color: #334155;
         --chart-secondary-blue: #60a5fa;
+        color-scheme: dark;
     }
 
     [x-cloak] {
@@ -88,6 +90,27 @@
     select,
     textarea {
         color-scheme: inherit;
+    }
+
+    /* Native select popups need explicit colors because Windows may ignore the closed field's Tailwind classes. */
+    select {
+        background-color: var(--field-background);
+        color: var(--heading-color);
+    }
+
+    select option,
+    select optgroup {
+        background-color: var(--field-background);
+        color: var(--heading-color);
+    }
+
+    select option:checked {
+        background-color: var(--busitema-blue);
+        color: #ffffff;
+    }
+
+    select option:disabled {
+        color: color-mix(in srgb, var(--text-color) 62%, transparent);
     }
 
     input::placeholder,

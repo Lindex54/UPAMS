@@ -13,8 +13,12 @@ use App\Models\SubCounty;
 use App\Models\Village;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use RuntimeException;
+use Throwable;
 
 class BeneficiaryController extends Controller
 {
@@ -30,18 +34,35 @@ class BeneficiaryController extends Controller
 
     public function store(StoreBeneficiaryRequest $request): RedirectResponse
     {
-        $beneficiary = DB::transaction(function () use ($request): Beneficiary {
-            $attributes = $request->validated();
-            $attributes['created_by'] = $request->user()?->id;
-            $attributes['updated_by'] = $request->user()?->id;
+        $attributes = $request->validated();
+        unset($attributes['photo']);
 
-            $beneficiary = Beneficiary::create($attributes);
-            $beneficiary->update([
-                'reference' => 'BEN-'.str_pad((string) $beneficiary->id, 6, '0', STR_PAD_LEFT),
-            ]);
+        $storedPhotoPath = $this->storePhoto($request->file('photo'));
 
-            return $beneficiary;
-        });
+        if ($storedPhotoPath !== null) {
+            $attributes['photo_path'] = $storedPhotoPath;
+        }
+
+        $attributes['created_by'] = $request->user()?->id;
+        $attributes['updated_by'] = $request->user()?->id;
+
+        try {
+            $beneficiary = DB::transaction(function () use ($attributes): Beneficiary {
+                $beneficiary = Beneficiary::create($attributes);
+                $beneficiary->update([
+                    'reference' => 'BEN-'.str_pad((string) $beneficiary->id, 6, '0', STR_PAD_LEFT),
+                ]);
+
+                return $beneficiary;
+            });
+        } catch (Throwable $exception) {
+            // Avoid leaving an orphaned private file when the database transaction fails.
+            if ($storedPhotoPath !== null) {
+                Storage::disk('local')->delete($storedPhotoPath);
+            }
+
+            throw $exception;
+        }
 
         return redirect()
             ->route('operations.beneficiaries.edit', $beneficiary->reference)
@@ -60,6 +81,7 @@ class BeneficiaryController extends Controller
             'module' => 'beneficiaries',
             'page' => 'edit',
             'beneficiary' => $beneficiary,
+            'beneficiaryPhotoUrl' => $this->photoUrl($beneficiary),
             ...$this->formReferenceData($beneficiary),
         ]);
     }
@@ -67,17 +89,71 @@ class BeneficiaryController extends Controller
     public function update(UpdateBeneficiaryRequest $request, Beneficiary $beneficiary): RedirectResponse
     {
         $attributes = $request->validated();
+        unset($attributes['photo']);
 
         if (blank($attributes['nin'] ?? null)) {
             unset($attributes['nin'], $attributes['nin_hash']);
         }
 
+        $previousPhotoPath = $beneficiary->photo_path;
+        $storedPhotoPath = $this->storePhoto($request->file('photo'));
+
+        if ($storedPhotoPath !== null) {
+            $attributes['photo_path'] = $storedPhotoPath;
+        }
+
         $attributes['updated_by'] = $request->user()?->id;
-        $beneficiary->update($attributes);
+
+        try {
+            DB::transaction(fn (): bool => $beneficiary->update($attributes));
+        } catch (Throwable $exception) {
+            // Preserve the current photo and remove only the uncommitted replacement.
+            if ($storedPhotoPath !== null) {
+                Storage::disk('local')->delete($storedPhotoPath);
+            }
+
+            throw $exception;
+        }
+
+        if ($storedPhotoPath !== null && $previousPhotoPath !== null) {
+            Storage::disk('local')->delete($previousPhotoPath);
+        }
 
         return redirect()
             ->route('operations.beneficiaries.edit', $beneficiary->reference)
             ->with('status', 'Beneficiary profile updated successfully.');
+    }
+
+    /**
+     * Store an uploaded beneficiary photo on the private local disk.
+     */
+    private function storePhoto(?UploadedFile $photo): ?string
+    {
+        if ($photo === null) {
+            return null;
+        }
+
+        $storedPhotoPath = $photo->store('beneficiaries/photos', 'local');
+
+        if ($storedPhotoPath === false) {
+            throw new RuntimeException('The beneficiary photo could not be stored.');
+        }
+
+        return $storedPhotoPath;
+    }
+
+    /**
+     * Generate a short-lived URL without making the stored personal photo public.
+     */
+    private function photoUrl(?Beneficiary $beneficiary): ?string
+    {
+        $photoPath = $beneficiary?->photo_path;
+
+        if ($photoPath === null || ! Storage::disk('local')->exists($photoPath)) {
+            return null;
+        }
+
+        return Storage::disk('local')->temporaryUrl($photoPath, now()->addMinutes(15));
     }
 
     /**

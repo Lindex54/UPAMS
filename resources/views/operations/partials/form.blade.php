@@ -75,6 +75,7 @@
                 @endforeach
                 @if ($isPersistentBeneficiary)
                     @include('operations.partials.beneficiary-national-identification-fields')
+                    @include('operations.partials.beneficiary-photo-field')
                 @endif
             </div>
         </section>

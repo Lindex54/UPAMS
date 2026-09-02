@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Village;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -38,7 +39,7 @@ class UgandaLocationBeneficiaryTest extends TestCase
             ->assertJsonCount(1, 'data');
     }
 
-    public function test_create_form_displays_the_cascading_location_controls_and_optional_email(): void
+    public function test_create_form_displays_cascading_location_controls_and_optional_profile_fields(): void
     {
         $user = User::factory()->create();
         [$district] = $this->locationHierarchy();
@@ -53,7 +54,26 @@ class UgandaLocationBeneficiaryTest extends TestCase
             ->assertSee('Loading counties')
             ->assertSee($district->name)
             ->assertSee('Email')
+            ->assertSee("Person's Photo")
+            ->assertSee('Default beneficiary avatar')
+            ->assertSee('Maximum file size: 2 MB.')
             ->assertSee('(optional)');
+    }
+
+    public function test_edit_form_displays_the_stored_photo_instead_of_the_default_avatar(): void
+    {
+        Storage::fake('local');
+        $photoPath = 'beneficiaries/photos/person.png';
+        Storage::disk('local')->put($photoPath, 'stored photo');
+        $administrator = User::factory()->create();
+        $beneficiary = Beneficiary::factory()->create(['photo_path' => $photoPath]);
+
+        $response = $this->actingAs($administrator)->get(route('operations.beneficiaries.edit', $beneficiary->reference));
+
+        $response
+            ->assertOk()
+            ->assertSee('Stored beneficiary photo')
+            ->assertDontSee('Default beneficiary avatar');
     }
 
     public function test_beneficiary_can_be_stored_without_email_or_a_system_login_account(): void
@@ -87,6 +107,89 @@ class UgandaLocationBeneficiaryTest extends TestCase
         $this->assertSame($village->id, $beneficiary->village_id);
         $this->assertSame($administrator->id, $beneficiary->created_by);
         $this->assertSame($userCount, User::count());
+        $this->assertNull($beneficiary->photo_path);
+    }
+
+    public function test_optional_beneficiary_photo_is_stored_on_the_private_disk(): void
+    {
+        Storage::fake('local');
+        $administrator = User::factory()->create();
+        $campus = Campus::factory()->create();
+        [$district, $county, $subCounty, $parish, $village] = $this->locationHierarchy();
+
+        $response = $this->actingAs($administrator)->post(route('operations.beneficiaries.store'), [
+            ...$this->validBeneficiaryPayload($campus, $district, $county, $subCounty, $parish, $village),
+            'photo' => $this->fakePhoto(),
+        ]);
+
+        $beneficiary = Beneficiary::sole();
+
+        $response->assertRedirect(route('operations.beneficiaries.edit', $beneficiary->reference));
+        $this->assertNotNull($beneficiary->photo_path);
+        Storage::disk('local')->assertExists($beneficiary->photo_path);
+    }
+
+    public function test_non_image_beneficiary_photo_is_rejected(): void
+    {
+        Storage::fake('local');
+        $administrator = User::factory()->create();
+        $campus = Campus::factory()->create();
+        [$district, $county, $subCounty, $parish, $village] = $this->locationHierarchy();
+
+        $response = $this->actingAs($administrator)->post(route('operations.beneficiaries.store'), [
+            ...$this->validBeneficiaryPayload($campus, $district, $county, $subCounty, $parish, $village),
+            'photo' => UploadedFile::fake()->create('person.pdf', 100, 'application/pdf'),
+        ]);
+
+        $response->assertSessionHasErrors('photo');
+        $this->assertDatabaseCount('beneficiaries', 0);
+        Storage::disk('local')->assertEmpty();
+    }
+
+    public function test_beneficiary_photo_larger_than_two_megabytes_is_rejected(): void
+    {
+        Storage::fake('local');
+        $administrator = User::factory()->create();
+        $campus = Campus::factory()->create();
+        [$district, $county, $subCounty, $parish, $village] = $this->locationHierarchy();
+
+        $response = $this->actingAs($administrator)->post(route('operations.beneficiaries.store'), [
+            ...$this->validBeneficiaryPayload($campus, $district, $county, $subCounty, $parish, $village),
+            'photo' => $this->fakePhoto(paddingBytes: (2 * 1024 * 1024) + 1),
+        ]);
+
+        $response->assertSessionHasErrors('photo');
+        $this->assertDatabaseCount('beneficiaries', 0);
+        Storage::disk('local')->assertEmpty();
+    }
+
+    public function test_replacing_a_beneficiary_photo_removes_the_previous_private_file(): void
+    {
+        Storage::fake('local');
+        $existingPhotoPath = 'beneficiaries/photos/existing.png';
+        Storage::disk('local')->put($existingPhotoPath, 'existing photo');
+        $administrator = User::factory()->create();
+        $beneficiary = Beneficiary::factory()->create(['photo_path' => $existingPhotoPath]);
+
+        $response = $this->actingAs($administrator)->put(route('operations.beneficiaries.update', $beneficiary), [
+            ...$this->validBeneficiaryPayload(
+                $beneficiary->campus,
+                $beneficiary->district,
+                $beneficiary->county,
+                $beneficiary->subCounty,
+                $beneficiary->parish,
+                $beneficiary->village,
+            ),
+            'photo' => $this->fakePhoto('replacement.png'),
+        ]);
+
+        $beneficiary->refresh();
+
+        $response->assertRedirect(route('operations.beneficiaries.edit', $beneficiary->reference));
+        $this->assertNotNull($beneficiary->photo_path);
+        $this->assertNotSame($existingPhotoPath, $beneficiary->photo_path);
+        Storage::disk('local')->assertExists($beneficiary->photo_path);
+        Storage::disk('local')->assertMissing($existingPhotoPath);
     }
 
     public function test_beneficiary_location_levels_must_belong_to_the_selected_parent(): void
@@ -275,5 +378,46 @@ class UgandaLocationBeneficiaryTest extends TestCase
         $village = Village::factory()->create(['parish_id' => $parish->id, 'name' => 'Test Village']);
 
         return [$district, $county, $subCounty, $parish, $village];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function validBeneficiaryPayload(
+        Campus $campus,
+        District $district,
+        County $county,
+        SubCounty $subCounty,
+        Parish $parish,
+        Village $village,
+    ): array {
+        return [
+            'full_name_organization' => 'Photo Test Beneficiary',
+            'category' => 'Student Beneficiary',
+            'telephone' => '+256 700 000 006',
+            'national_id_given_names' => 'Photo',
+            'national_id_surname' => 'Beneficiary',
+            'district_id' => $district->id,
+            'county_id' => $county->id,
+            'sub_county_id' => $subCounty->id,
+            'parish_id' => $parish->id,
+            'village_id' => $village->id,
+            'campus_id' => $campus->id,
+            'record_status' => 'Active',
+        ];
+    }
+
+    private function fakePhoto(string $name = 'person.png', int $paddingBytes = 0): UploadedFile
+    {
+        $pngContents = base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WlB9pAAAAAASUVORK5CYII=',
+            true,
+        );
+
+        if ($pngContents === false) {
+            throw new \RuntimeException('The embedded test photo could not be decoded.');
+        }
+
+        return UploadedFile::fake()->createWithContent($name, $pngContents.str_repeat("\0", $paddingBytes));
     }
 }

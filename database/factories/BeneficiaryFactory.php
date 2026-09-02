@@ -31,6 +31,7 @@ class BeneficiaryFactory extends Factory
             'email' => null,
             'national_id_given_names' => fake()->firstName(),
             'national_id_surname' => fake()->lastName(),
+            'photo_path' => null,
             'district_id' => District::factory(),
             'county_id' => fn (array $attributes) => County::factory()->create([
                 'district_id' => $attributes['district_id'],
