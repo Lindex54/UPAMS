@@ -208,9 +208,9 @@
 
 @extends('layouts.app')
 
-@section('title', $pageHeading.' | UPAMS')
+@section('title', $pageHeading.' | Property Management')
 @section('page-heading', $pageHeading)
-@section('portal-label', 'UPAMS Super Administration')
+@section('portal-label', 'Property Management · Super Administration')
 
 @section('content')
     @include("operations.partials.{$page}", ['design' => $design, 'module' => $module, 'record' => $record])

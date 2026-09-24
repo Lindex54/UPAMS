@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Finance Dashboard | UPAMS')
+@section('title', 'Finance Dashboard | Property Management')
 @section('page-heading', 'Financial Operations')
-@section('portal-label', 'UPAMS Property Finance')
+@section('portal-label', 'Property Management · Finance')
 @section('user-role', 'Finance Officer')
 @section('user-initial', 'F')
 

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Utilities | UPAMS') @section('portal-label','Finance & Utilities') @section('page-heading','Utilities')
+@section('title','Utilities | Property Management') @section('portal-label','Finance & Utilities') @section('page-heading','Utilities')
 @section('content')
 @include('admin.partials.flash')
 <div class="grid gap-4 sm:grid-cols-3"><div class="rounded-2xl border border-border bg-white p-5 dark:bg-slate-900"><p class="text-xs uppercase text-body-text">Registered meters</p><p class="text-2xl font-bold">{{ $meters->total() }}</p></div><div class="rounded-2xl border border-border bg-white p-5 dark:bg-slate-900"><p class="text-xs uppercase text-body-text">Utility types</p><p class="text-2xl font-bold">{{ $types->count() }}</p></div><div class="rounded-2xl border border-red-300 bg-white p-5 dark:bg-slate-900"><p class="text-xs uppercase text-body-text">Abnormal readings</p><p class="text-2xl font-bold text-red-600">{{ $abnormalCount }}</p></div></div>

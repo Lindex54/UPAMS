@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Record Payment | UPAMS') @section('portal-label','Finance & Utilities') @section('page-heading','Record payment')
+@section('title','Record Payment | Property Management') @section('portal-label','Finance & Utilities') @section('page-heading','Record payment')
 @section('content')
 @include('admin.partials.flash')
 <form method="POST" action="{{ route('payments.store') }}" class="mx-auto max-w-3xl rounded-2xl border border-border bg-white p-6 shadow-sm dark:bg-slate-900">@csrf

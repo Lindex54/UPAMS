@@ -18,7 +18,24 @@ class NotificationController extends Controller
 {
     public function index(Request $request): View
     {
-        return view('admin.notifications.index', ['notifications' => Notification::query()->with(['recipient', 'campus', 'creator'])->latest('sent_at')->paginate(15)->withQueryString(), 'templates' => NotificationTemplate::query()->orderBy('name')->get(), 'failedCount' => Notification::query()->where('status', 'Failed')->count()]);
+        $notifications = Notification::query()
+            ->with(['recipient', 'campus', 'creator'])
+            ->latest('sent_at')
+            ->paginate(15)
+            ->withQueryString();
+
+        $templates = NotificationTemplate::query()
+            ->where('is_active', true)
+            ->orderBy('event_type')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.notifications.index', [
+            'notifications' => $notifications,
+            'templates' => $templates,
+            'failedCount' => Notification::query()->where('status', 'Failed')->count(),
+            'notificationCount' => Notification::query()->count(),
+        ]);
     }
 
     public function create(): View

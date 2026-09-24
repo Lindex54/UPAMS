@@ -14,6 +14,7 @@
             ['label' => 'Land Management', 'href' => url('/land'), 'pattern' => 'land*'],
             ['label' => 'Buildings & Spaces', 'href' => url('/buildings'), 'pattern' => 'buildings*'],
             ['label' => 'Laboratories & Equipment', 'href' => url('/laboratories'), 'pattern' => 'laboratories*'],
+            ['label' => 'ICT Equipment & Computer Labs', 'href' => route('technician.dashboard'), 'pattern' => 'technician.*', 'route' => true],
             ['label' => 'Vehicles', 'href' => url('/vehicles'), 'pattern' => 'vehicles*'],
             ['label' => 'Commercial Property', 'href' => url('/commercial-property'), 'pattern' => 'commercial-property*'],
             ['label' => 'Agricultural Property', 'href' => url('/agricultural-property'), 'pattern' => 'agricultural-property*'],

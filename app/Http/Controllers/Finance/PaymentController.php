@@ -24,7 +24,7 @@ class PaymentController extends Controller
             ->when($request->string('q')->toString(), fn (Builder $query, string $q): Builder => $query->where(fn (Builder $nested): Builder => $nested->where('receipt_number', 'like', "%{$q}%")->orWhere('payment_reference', 'like', "%{$q}%")))
             ->when($request->string('status')->toString(), fn (Builder $query, string $status): Builder => $query->where('status', $status))->latest('paid_at');
 
-        return view('admin.payments.index', ['payments' => $payments->paginate(15)->withQueryString(), 'recordedTotal' => Payment::query()->where('status', 'Recorded')->sum('amount')]);
+        return view('admin.payments.index', ['payments' => $payments->paginate(15)->withQueryString(), 'recordedTotal' => Payment::query()->valid()->sum('amount')]);
     }
 
     public function create(Request $request): View

@@ -63,6 +63,31 @@ class AssetManagementDesignTest extends TestCase
             ->assertSee('Organizational Unit <span class="font-normal text-body-text">(optional)</span>', escape: false);
     }
 
+    public function test_land_record_view_displays_its_property_image(): void
+    {
+        $user = User::factory()->make(['is_active' => true]);
+
+        $response = $this->actingAs($user)->get(route('asset-management.land.show', [
+            'record' => 'LND-0086',
+        ]));
+
+        $response
+            ->assertSee('Current property photograph')
+            ->assertSee('images/properties/arapai-research-farm.png', escape: false)
+            ->assertSee('alt="Cultivated research fields and farm buildings at Arapai Research Farm"', escape: false);
+    }
+
+    public function test_record_view_displays_an_image_fallback_when_none_is_available(): void
+    {
+        $user = User::factory()->make(['is_active' => true]);
+
+        $response = $this->actingAs($user)->get(route('asset-management.assets.show', [
+            'record' => 'AST-004821',
+        ]));
+
+        $response->assertSee('No image available for this record.');
+    }
+
     /**
      * @param  array<string, string>  $parameters
      * @param  array<int, string>  $expectedContent
@@ -99,9 +124,9 @@ class AssetManagementDesignTest extends TestCase
         ];
         $pages = [
             'index' => [[], ['Search and filters', 'Audit / Provenance', 'Date Added']],
-            'create' => [[], ['Record Information', 'No data will be saved', 'Save as draft']],
-            'show' => [['record' => 'PREVIEW-001'], ['Added By', 'Last Updated Date', 'Record History']],
-            'edit' => [['record' => 'PREVIEW-001'], ['Save changes', 'No data will be saved']],
+            'create' => [[], ['Record Information', 'GPS Latitude', 'GPS Longitude', 'No data will be saved', 'Save as draft']],
+            'show' => [['record' => 'PREVIEW-001'], ['Added By', 'Last Updated Date', 'GPS Latitude', 'GPS Longitude', 'Record History']],
+            'edit' => [['record' => 'PREVIEW-001'], ['GPS Latitude', 'GPS Longitude', 'Save changes', 'No data will be saved']],
         ];
         $cases = [];
 

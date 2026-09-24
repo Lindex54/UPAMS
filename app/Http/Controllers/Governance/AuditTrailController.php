@@ -24,9 +24,9 @@ class AuditTrailController extends Controller
 
     public function export(Request $request): mixed
     {
-        $rows = $this->query($request)->cursor()->map(fn (AuditLog $log): array => [$log->created_at->format('Y-m-d H:i:s'), $log->user_name, $log->campus?->name, $log->action, $log->auditable_type, $log->auditable_id, $log->description, json_encode($log->old_values), json_encode($log->new_values), $log->ip_address]);
+        $rows = $this->query($request)->cursor()->map(fn (AuditLog $log): array => [$log->created_at->format('Y-m-d H:i:s'), $log->user_id, $log->user_name, $log->user_role, $log->campus?->name, $log->action, $log->auditable_type, $log->auditable_id, $log->description, json_encode($log->old_values), json_encode($log->new_values), $log->ip_address]);
 
-        return CsvExporter::download('upams-audit-trail-'.today()->format('Y-m-d').'.csv', ['Created At', 'User', 'Campus', 'Action', 'Record Type', 'Record ID', 'Description', 'Previous Values', 'New Values', 'IP Address'], $rows);
+        return CsvExporter::download('upams-audit-trail-'.today()->format('Y-m-d').'.csv', ['Created At', 'User ID', 'User Name', 'User Role', 'Campus', 'Action', 'Record Type', 'Record ID', 'Description', 'Previous Values', 'New Values', 'IP Address'], $rows);
     }
 
     private function query(Request $request): Builder

@@ -19,9 +19,9 @@
                 ['Custodian', 'text', 'Responsible officer', 'Isaac Wanyama'],
             ],
             'records' => [
-                ['reference' => 'AST-004821', 'name' => 'Cisco Catalyst Core Switch', 'campus' => 'Main Campus', 'primary' => 'ICT Equipment', 'secondary' => 'Administration Block · Server Room', 'status' => 'In Use', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Daniel Okello', 'dateAdded' => '18 Mar 2024', 'updatedBy' => 'Sarah Namukasa', 'dateUpdated' => '28 Aug 2026'],
-                ['reference' => 'AST-004793', 'name' => 'Executive Conference Table', 'campus' => 'Nagongera Campus', 'primary' => 'Furniture & Fittings', 'secondary' => 'Council Room', 'status' => 'In Use', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Grace Atim', 'dateAdded' => '06 Feb 2024', 'updatedBy' => 'Grace Atim', 'dateUpdated' => '21 Jul 2026'],
-                ['reference' => 'AST-004706', 'name' => 'Standby Generator 250 KVA', 'campus' => 'Arapai Campus', 'primary' => 'Equipment & Machinery', 'secondary' => 'Utilities Yard', 'status' => 'Maintenance', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Peter Mugisha', 'dateAdded' => '11 Nov 2023', 'updatedBy' => 'John Bosco', 'dateUpdated' => '30 Aug 2026'],
+                ['reference' => 'AST-004821', 'name' => 'Cisco Catalyst Core Switch', 'campus' => 'Main Campus', 'latitude' => '0.5450000', 'longitude' => '34.0250000', 'primary' => 'ICT Equipment', 'secondary' => 'Administration Block · Server Room', 'status' => 'In Use', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Daniel Okello', 'dateAdded' => '18 Mar 2024', 'updatedBy' => 'Sarah Namukasa', 'dateUpdated' => '28 Aug 2026'],
+                ['reference' => 'AST-004793', 'name' => 'Executive Conference Table', 'campus' => 'Nagongera Campus', 'latitude' => '0.7700000', 'longitude' => '34.0261000', 'primary' => 'Furniture & Fittings', 'secondary' => 'Council Room', 'status' => 'In Use', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Grace Atim', 'dateAdded' => '06 Feb 2024', 'updatedBy' => 'Grace Atim', 'dateUpdated' => '21 Jul 2026'],
+                ['reference' => 'AST-004706', 'name' => 'Standby Generator 250 KVA', 'campus' => 'Arapai Campus', 'latitude' => '1.7800000', 'longitude' => '33.6250000', 'primary' => 'Equipment & Machinery', 'secondary' => 'Utilities Yard', 'status' => 'Maintenance', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Peter Mugisha', 'dateAdded' => '11 Nov 2023', 'updatedBy' => 'John Bosco', 'dateUpdated' => '30 Aug 2026'],
             ],
         ],
         'land' => [
@@ -39,13 +39,12 @@
                 ['Survey Reference', 'text', 'Survey plan number', 'SRV-ARP-2019-028'],
                 ['Title / Instrument Number', 'text', 'Registration reference', 'FRV 428 Folio 17'],
                 ['Boundary Status', 'select', '', 'Clearly demarcated', ['Clearly demarcated', 'Partially demarcated', 'Survey pending', 'Boundary dispute']],
-                ['GPS / Coordinates', 'text', 'Latitude, longitude', '1.7148, 33.6104'],
                 ['Managing Unit', 'text', 'Responsible faculty or office', 'Faculty of Agriculture'],
             ],
             'records' => [
-                ['reference' => 'LND-0086', 'name' => 'Arapai Research Farm – North Block', 'campus' => 'Arapai Campus', 'primary' => 'Freehold · 318.4 acres', 'secondary' => 'Agricultural research', 'status' => 'Verified', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Mary Akello', 'dateAdded' => '12 Jun 2022', 'updatedBy' => 'Peter Mugisha', 'dateUpdated' => '20 Aug 2026'],
-                ['reference' => 'LND-0074', 'name' => 'Nagongera Eastern Reserve', 'campus' => 'Nagongera Campus', 'primary' => 'Freehold · 146.8 acres', 'secondary' => 'Future development', 'status' => 'Survey Review', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'John Bosco', 'dateAdded' => '03 Mar 2021', 'updatedBy' => 'Mary Akello', 'dateUpdated' => '14 Jul 2026'],
-                ['reference' => 'LND-0061', 'name' => 'Namasagali Riverside Parcel', 'campus' => 'Namasagali Campus', 'primary' => 'Leasehold · 92.6 acres', 'secondary' => 'Training and research', 'status' => 'Active', 'statusClass' => 'bg-blue-50 text-busitema-blue', 'addedBy' => 'Grace Atim', 'dateAdded' => '17 Sep 2020', 'updatedBy' => 'Peter Mugisha', 'dateUpdated' => '02 Jun 2026'],
+                ['reference' => 'LND-0086', 'name' => 'Arapai Research Farm – North Block', 'campus' => 'Arapai Campus', 'latitude' => '1.7812000', 'longitude' => '33.6241000', 'primary' => 'Freehold · 318.4 acres', 'secondary' => 'Agricultural research', 'status' => 'Verified', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'image' => 'images/properties/arapai-research-farm.png', 'imageAlt' => 'Cultivated research fields and farm buildings at Arapai Research Farm', 'addedBy' => 'Mary Akello', 'dateAdded' => '12 Jun 2022', 'updatedBy' => 'Peter Mugisha', 'dateUpdated' => '20 Aug 2026'],
+                ['reference' => 'LND-0074', 'name' => 'Nagongera Eastern Reserve', 'campus' => 'Nagongera Campus', 'latitude' => '0.7712000', 'longitude' => '34.0252000', 'primary' => 'Freehold · 146.8 acres', 'secondary' => 'Future development', 'status' => 'Survey Review', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'John Bosco', 'dateAdded' => '03 Mar 2021', 'updatedBy' => 'Mary Akello', 'dateUpdated' => '14 Jul 2026'],
+                ['reference' => 'LND-0061', 'name' => 'Namasagali Riverside Parcel', 'campus' => 'Namasagali Campus', 'latitude' => '1.0125000', 'longitude' => '32.9500000', 'primary' => 'Leasehold · 92.6 acres', 'secondary' => 'Training and research', 'status' => 'Active', 'statusClass' => 'bg-blue-50 text-busitema-blue', 'addedBy' => 'Grace Atim', 'dateAdded' => '17 Sep 2020', 'updatedBy' => 'Peter Mugisha', 'dateUpdated' => '02 Jun 2026'],
             ],
         ],
         'buildings' => [
@@ -67,9 +66,9 @@
                 ['Facility Manager', 'text', 'Responsible officer', 'Esther Nabwire'],
             ],
             'records' => [
-                ['reference' => 'BLD-0142', 'name' => 'Faculty of Engineering Block B', 'campus' => 'Main Campus', 'primary' => 'Academic · 6,840 m²', 'secondary' => '92% occupied', 'status' => 'Good', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Esther Nabwire', 'dateAdded' => '22 May 2020', 'updatedBy' => 'Peter Mugisha', 'dateUpdated' => '29 Aug 2026'],
-                ['reference' => 'BLD-0138', 'name' => 'Arapai Central Library', 'campus' => 'Arapai Campus', 'primary' => 'Library · 2,470 m²', 'secondary' => '78% occupied', 'status' => 'Fair', 'statusClass' => 'bg-blue-50 text-busitema-blue', 'addedBy' => 'Sarah Namukasa', 'dateAdded' => '14 Jan 2020', 'updatedBy' => 'Esther Nabwire', 'dateUpdated' => '05 Aug 2026'],
-                ['reference' => 'BLD-0116', 'name' => 'Nagongera Staff Housing Block C', 'campus' => 'Nagongera Campus', 'primary' => 'Residential · 1,920 m²', 'secondary' => '100% occupied', 'status' => 'Maintenance', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'John Bosco', 'dateAdded' => '08 Aug 2019', 'updatedBy' => 'Grace Atim', 'dateUpdated' => '30 Aug 2026'],
+                ['reference' => 'BLD-0142', 'name' => 'Faculty of Engineering Block B', 'campus' => 'Main Campus', 'latitude' => '0.5462000', 'longitude' => '34.0241000', 'primary' => 'Academic · 6,840 m²', 'secondary' => '92% occupied', 'status' => 'Good', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Esther Nabwire', 'dateAdded' => '22 May 2020', 'updatedBy' => 'Peter Mugisha', 'dateUpdated' => '29 Aug 2026'],
+                ['reference' => 'BLD-0138', 'name' => 'Arapai Central Library', 'campus' => 'Arapai Campus', 'latitude' => '1.7790000', 'longitude' => '33.6264000', 'primary' => 'Library · 2,470 m²', 'secondary' => '78% occupied', 'status' => 'Fair', 'statusClass' => 'bg-blue-50 text-busitema-blue', 'addedBy' => 'Sarah Namukasa', 'dateAdded' => '14 Jan 2020', 'updatedBy' => 'Esther Nabwire', 'dateUpdated' => '05 Aug 2026'],
+                ['reference' => 'BLD-0116', 'name' => 'Nagongera Staff Housing Block C', 'campus' => 'Nagongera Campus', 'latitude' => '0.7690000', 'longitude' => '34.0275000', 'primary' => 'Residential · 1,920 m²', 'secondary' => '100% occupied', 'status' => 'Maintenance', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'John Bosco', 'dateAdded' => '08 Aug 2019', 'updatedBy' => 'Grace Atim', 'dateUpdated' => '30 Aug 2026'],
             ],
         ],
         'laboratories' => [
@@ -91,9 +90,9 @@
                 ['Safety Classification', 'text', 'Applicable safety class', 'Controlled analytical instrument'],
             ],
             'records' => [
-                ['reference' => 'LAB-1084', 'name' => 'UV-Visible Spectrophotometer', 'campus' => 'Main Campus', 'primary' => 'Analytical Equipment', 'secondary' => 'Chemistry Lab · Due 15 Oct', 'status' => 'Operational', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Dr. Lydia Auma', 'dateAdded' => '10 Apr 2024', 'updatedBy' => 'Samuel Otema', 'dateUpdated' => '26 Aug 2026'],
-                ['reference' => 'LAB-0962', 'name' => 'Universal Testing Machine', 'campus' => 'Main Campus', 'primary' => 'Workshop Equipment', 'secondary' => 'Materials Lab · Due 08 Sep', 'status' => 'Calibration Due', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Samuel Otema', 'dateAdded' => '17 Nov 2023', 'updatedBy' => 'Dr. Lydia Auma', 'dateUpdated' => '18 Aug 2026'],
-                ['reference' => 'LAB-0818', 'name' => 'Class II Biosafety Cabinet', 'campus' => 'Arapai Campus', 'primary' => 'Safety Equipment', 'secondary' => 'Biology Lab · Due 22 Dec', 'status' => 'Operational', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Grace Atim', 'dateAdded' => '21 Feb 2023', 'updatedBy' => 'John Bosco', 'dateUpdated' => '09 Jul 2026'],
+                ['reference' => 'LAB-1084', 'name' => 'UV-Visible Spectrophotometer', 'campus' => 'Main Campus', 'latitude' => '0.5440000', 'longitude' => '34.0264000', 'primary' => 'Analytical Equipment', 'secondary' => 'Chemistry Lab · Due 15 Oct', 'status' => 'Operational', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Dr. Lydia Auma', 'dateAdded' => '10 Apr 2024', 'updatedBy' => 'Samuel Otema', 'dateUpdated' => '26 Aug 2026'],
+                ['reference' => 'LAB-0962', 'name' => 'Universal Testing Machine', 'campus' => 'Main Campus', 'latitude' => '0.5471000', 'longitude' => '34.0256000', 'primary' => 'Workshop Equipment', 'secondary' => 'Materials Lab · Due 08 Sep', 'status' => 'Calibration Due', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Samuel Otema', 'dateAdded' => '17 Nov 2023', 'updatedBy' => 'Dr. Lydia Auma', 'dateUpdated' => '18 Aug 2026'],
+                ['reference' => 'LAB-0818', 'name' => 'Class II Biosafety Cabinet', 'campus' => 'Arapai Campus', 'latitude' => '1.7821000', 'longitude' => '33.6256000', 'primary' => 'Safety Equipment', 'secondary' => 'Biology Lab · Due 22 Dec', 'status' => 'Operational', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Grace Atim', 'dateAdded' => '21 Feb 2023', 'updatedBy' => 'John Bosco', 'dateUpdated' => '09 Jul 2026'],
             ],
         ],
         'vehicles' => [
@@ -115,9 +114,9 @@
                 ['Assigned Unit / Driver', 'text', 'Unit and responsible driver', 'Estates Office · Moses Ochieng'],
             ],
             'records' => [
-                ['reference' => 'VEH-0094', 'name' => 'Toyota Land Cruiser – Estates', 'campus' => 'Main Campus', 'primary' => 'UG 0812U · Land Cruiser Prado', 'secondary' => '68,420 km · Service 18 Sep', 'status' => 'Available', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Moses Ochieng', 'dateAdded' => '08 Jul 2022', 'updatedBy' => 'Sarah Namukasa', 'dateUpdated' => '31 Aug 2026'],
-                ['reference' => 'VEH-0088', 'name' => 'Isuzu University Bus 62-Seater', 'campus' => 'Nagongera Campus', 'primary' => 'UG 0674U · Isuzu F-Series', 'secondary' => '112,084 km · Service due', 'status' => 'Service Due', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Peter Mugisha', 'dateAdded' => '15 Mar 2021', 'updatedBy' => 'Moses Ochieng', 'dateUpdated' => '27 Aug 2026'],
-                ['reference' => 'VEH-0072', 'name' => 'Massey Ferguson Farm Tractor', 'campus' => 'Arapai Campus', 'primary' => 'TR 2146 · MF 375', 'secondary' => '4,821 hrs · Service 30 Nov', 'status' => 'Assigned', 'statusClass' => 'bg-blue-50 text-busitema-blue', 'addedBy' => 'Mary Akello', 'dateAdded' => '19 Nov 2019', 'updatedBy' => 'Grace Atim', 'dateUpdated' => '11 Jul 2026'],
+                ['reference' => 'VEH-0094', 'name' => 'Toyota Land Cruiser – Estates', 'campus' => 'Main Campus', 'latitude' => '0.5433000', 'longitude' => '34.0239000', 'primary' => 'UG 0812U · Land Cruiser Prado', 'secondary' => '68,420 km · Service 18 Sep', 'status' => 'Available', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Moses Ochieng', 'dateAdded' => '08 Jul 2022', 'updatedBy' => 'Sarah Namukasa', 'dateUpdated' => '31 Aug 2026'],
+                ['reference' => 'VEH-0088', 'name' => 'Isuzu University Bus 62-Seater', 'campus' => 'Nagongera Campus', 'latitude' => '0.7721000', 'longitude' => '34.0267000', 'primary' => 'UG 0674U · Isuzu F-Series', 'secondary' => '112,084 km · Service due', 'status' => 'Service Due', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Peter Mugisha', 'dateAdded' => '15 Mar 2021', 'updatedBy' => 'Moses Ochieng', 'dateUpdated' => '27 Aug 2026'],
+                ['reference' => 'VEH-0072', 'name' => 'Massey Ferguson Farm Tractor', 'campus' => 'Arapai Campus', 'latitude' => '1.7783000', 'longitude' => '33.6239000', 'primary' => 'TR 2146 · MF 375', 'secondary' => '4,821 hrs · Service 30 Nov', 'status' => 'Assigned', 'statusClass' => 'bg-blue-50 text-busitema-blue', 'addedBy' => 'Mary Akello', 'dateAdded' => '19 Nov 2019', 'updatedBy' => 'Grace Atim', 'dateUpdated' => '11 Jul 2026'],
             ],
         ],
         'commercial-property' => [
@@ -139,9 +138,9 @@
                 ['Property Manager', 'text', 'Responsible officer', 'Ruth Nandutu'],
             ],
             'records' => [
-                ['reference' => 'COM-0214', 'name' => 'Main Campus Bookshop Unit', 'campus' => 'Main Campus', 'primary' => 'Retail Unit · 186 m²', 'secondary' => 'Occupied · UGX 4.8M/month', 'status' => 'Occupied', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Ruth Nandutu', 'dateAdded' => '09 Dec 2021', 'updatedBy' => 'Daniel Okello', 'dateUpdated' => '24 Aug 2026'],
-                ['reference' => 'COM-0197', 'name' => 'Nagongera Campus Cafeteria', 'campus' => 'Nagongera Campus', 'primary' => 'Cafeteria · 324 m²', 'secondary' => 'Occupied · UGX 6.2M/month', 'status' => 'Lease Expiring', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Grace Atim', 'dateAdded' => '12 May 2021', 'updatedBy' => 'Ruth Nandutu', 'dateUpdated' => '30 Aug 2026'],
-                ['reference' => 'COM-0176', 'name' => 'Arapai Innovation Hub Office 04', 'campus' => 'Arapai Campus', 'primary' => 'Office Space · 72 m²', 'secondary' => 'Vacant · UGX 1.8M/month', 'status' => 'Available', 'statusClass' => 'bg-blue-50 text-busitema-blue', 'addedBy' => 'John Bosco', 'dateAdded' => '14 Oct 2020', 'updatedBy' => 'Sarah Namukasa', 'dateUpdated' => '03 Aug 2026'],
+                ['reference' => 'COM-0214', 'name' => 'Main Campus Bookshop Unit', 'campus' => 'Main Campus', 'latitude' => '0.5458000', 'longitude' => '34.0272000', 'primary' => 'Retail Unit · 186 m²', 'secondary' => 'Occupied · UGX 4.8M/month', 'status' => 'Occupied', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Ruth Nandutu', 'dateAdded' => '09 Dec 2021', 'updatedBy' => 'Daniel Okello', 'dateUpdated' => '24 Aug 2026'],
+                ['reference' => 'COM-0197', 'name' => 'Nagongera Campus Cafeteria', 'campus' => 'Nagongera Campus', 'latitude' => '0.7683000', 'longitude' => '34.0250000', 'primary' => 'Cafeteria · 324 m²', 'secondary' => 'Occupied · UGX 6.2M/month', 'status' => 'Lease Expiring', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Grace Atim', 'dateAdded' => '12 May 2021', 'updatedBy' => 'Ruth Nandutu', 'dateUpdated' => '30 Aug 2026'],
+                ['reference' => 'COM-0176', 'name' => 'Arapai Innovation Hub Office 04', 'campus' => 'Arapai Campus', 'latitude' => '1.7808000', 'longitude' => '33.6272000', 'primary' => 'Office Space · 72 m²', 'secondary' => 'Vacant · UGX 1.8M/month', 'status' => 'Available', 'statusClass' => 'bg-blue-50 text-busitema-blue', 'addedBy' => 'John Bosco', 'dateAdded' => '14 Oct 2020', 'updatedBy' => 'Sarah Namukasa', 'dateUpdated' => '03 Aug 2026'],
             ],
         ],
         'agricultural-property' => [
@@ -163,9 +162,9 @@
                 ['Property Custodian', 'text', 'Responsible officer', 'Dr. Michael Etonu'],
             ],
             'records' => [
-                ['reference' => 'AGR-0168', 'name' => 'Arapai Dairy Demonstration Unit', 'campus' => 'Arapai Campus', 'primary' => 'Livestock Facility · 24.6 acres', 'secondary' => 'Dairy training and research', 'status' => 'Active', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Dr. Michael Etonu', 'dateAdded' => '04 Apr 2022', 'updatedBy' => 'Mary Akello', 'dateUpdated' => '25 Aug 2026'],
-                ['reference' => 'AGR-0151', 'name' => 'Nagongera Irrigated Crop Block', 'campus' => 'Nagongera Campus', 'primary' => 'Crop Plot · 86.2 acres', 'secondary' => 'Maize and soybean trials', 'status' => 'Active', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Mary Akello', 'dateAdded' => '18 Oct 2021', 'updatedBy' => 'Dr. Michael Etonu', 'dateUpdated' => '13 Aug 2026'],
-                ['reference' => 'AGR-0139', 'name' => 'Namasagali Greenhouse Complex', 'campus' => 'Namasagali Campus', 'primary' => 'Greenhouse · 2,400 m²', 'secondary' => 'Horticulture demonstrations', 'status' => 'Inspection Due', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Grace Atim', 'dateAdded' => '06 Jun 2020', 'updatedBy' => 'Peter Mugisha', 'dateUpdated' => '29 Aug 2026'],
+                ['reference' => 'AGR-0168', 'name' => 'Arapai Dairy Demonstration Unit', 'campus' => 'Arapai Campus', 'latitude' => '1.7776000', 'longitude' => '33.6253000', 'primary' => 'Livestock Facility · 24.6 acres', 'secondary' => 'Dairy training and research', 'status' => 'Active', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Dr. Michael Etonu', 'dateAdded' => '04 Apr 2022', 'updatedBy' => 'Mary Akello', 'dateUpdated' => '25 Aug 2026'],
+                ['reference' => 'AGR-0151', 'name' => 'Nagongera Irrigated Crop Block', 'campus' => 'Nagongera Campus', 'latitude' => '0.7708000', 'longitude' => '34.0283000', 'primary' => 'Crop Plot · 86.2 acres', 'secondary' => 'Maize and soybean trials', 'status' => 'Active', 'statusClass' => 'bg-emerald-50 text-emerald-700', 'addedBy' => 'Mary Akello', 'dateAdded' => '18 Oct 2021', 'updatedBy' => 'Dr. Michael Etonu', 'dateUpdated' => '13 Aug 2026'],
+                ['reference' => 'AGR-0139', 'name' => 'Namasagali Greenhouse Complex', 'campus' => 'Namasagali Campus', 'latitude' => '1.0137000', 'longitude' => '32.9491000', 'primary' => 'Greenhouse · 2,400 m²', 'secondary' => 'Horticulture demonstrations', 'status' => 'Inspection Due', 'statusClass' => 'bg-amber-50 text-amber-700', 'addedBy' => 'Grace Atim', 'dateAdded' => '06 Jun 2020', 'updatedBy' => 'Peter Mugisha', 'dateUpdated' => '29 Aug 2026'],
             ],
         ],
     ];
@@ -182,7 +181,7 @@
 
 @extends('layouts.app')
 
-@section('title', $pageHeading.' | UPAMS')
+@section('title', $pageHeading.' | Property Management')
 @section('page-heading', $pageHeading)
 
 @section('content')

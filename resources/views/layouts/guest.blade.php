@@ -8,7 +8,7 @@
 
         <x-theme-script />
 
-        <title>@yield('title', 'UPAMS')</title>
+        <title>@yield('title', 'Property Management')</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>

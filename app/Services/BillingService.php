@@ -15,7 +15,7 @@ class BillingService
     {
         return DB::transaction(function () use ($data, $actor, $invoice): Invoice {
             $invoice = $invoice?->newQuery()->lockForUpdate()->findOrFail($invoice->getKey()) ?? new Invoice;
-            $paid = $invoice->exists ? $invoice->payments()->where('status', 'Recorded')->sum('amount') : 0;
+            $paid = $invoice->exists ? $invoice->validPayments()->sum('amount') : 0;
             $total = round((float) $data['subtotal'] + (float) ($data['tax_amount'] ?? 0), 2);
 
             if ($total < (float) $paid) {
@@ -58,11 +58,11 @@ class BillingService
     {
         return DB::transaction(function () use ($payment, $reason, $actor): Payment {
             $payment = Payment::query()->lockForUpdate()->findOrFail($payment->id);
-            if ($payment->status === 'Reversed') {
+            if ($payment->status === Payment::STATUS_REVERSED) {
                 throw ValidationException::withMessages(['reason' => 'This payment has already been reversed.']);
             }
 
-            $payment->update(['status' => 'Reversed', 'reversal_reason' => $reason, 'reversed_at' => now(), 'reversed_by' => $actor->id, 'updated_by' => $actor->id]);
+            $payment->update(['status' => Payment::STATUS_REVERSED, 'reversal_reason' => $reason, 'reversed_at' => now(), 'reversed_by' => $actor->id, 'updated_by' => $actor->id]);
             $this->syncInvoiceStatus(Invoice::query()->lockForUpdate()->findOrFail($payment->invoice_id));
 
             return $payment->refresh();
@@ -75,7 +75,7 @@ class BillingService
             return;
         }
 
-        $paid = (float) $invoice->payments()->where('status', 'Recorded')->sum('amount');
+        $paid = (float) $invoice->validPayments()->sum('amount');
         $status = $paid >= (float) $invoice->total_amount ? 'Paid' : ($paid > 0 ? 'Partially Paid' : ($invoice->due_date->lt(today()) ? 'Overdue' : 'Issued'));
         if ($invoice->status !== $status) {
             $invoice->updateQuietly(['status' => $status]);

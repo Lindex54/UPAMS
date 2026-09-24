@@ -16,6 +16,7 @@ class AuditTrailService
         return AuditLog::query()->create([
             'user_id' => $user?->getAuthIdentifier(),
             'user_name' => $user?->name,
+            'user_role' => $user?->role?->name,
             'campus_id' => $record?->getAttribute('campus_id') ?? $user?->campus_id,
             'action' => $action,
             'auditable_type' => $record?->getMorphClass(),

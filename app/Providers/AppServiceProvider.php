@@ -3,8 +3,15 @@
 namespace App\Providers;
 
 use App\Models\Approval;
+use App\Models\Asset;
 use App\Models\Beneficiary;
+use App\Models\ComputerLab;
+use App\Models\Document;
+use App\Models\IctEquipmentAssignment;
+use App\Models\IctInspection;
+use App\Models\IctTransferRequest;
 use App\Models\Invoice;
+use App\Models\MaintenanceRequest;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
 use App\Models\Payment;
@@ -30,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        foreach ([User::class, Beneficiary::class, Invoice::class, Payment::class, UtilityType::class, UtilityMeter::class, UtilityBilling::class, Approval::class, NotificationTemplate::class, Notification::class] as $auditableModel) {
+        foreach ([User::class, Beneficiary::class, Invoice::class, Payment::class, UtilityType::class, UtilityMeter::class, UtilityBilling::class, Approval::class, NotificationTemplate::class, Notification::class, Asset::class, ComputerLab::class, MaintenanceRequest::class, IctEquipmentAssignment::class, IctInspection::class, IctTransferRequest::class, Document::class] as $auditableModel) {
             $auditableModel::observe(AuditableObserver::class);
         }
     }

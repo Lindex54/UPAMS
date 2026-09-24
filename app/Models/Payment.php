@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\PaymentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,10 @@ use LogicException;
 ])]
 class Payment extends Model
 {
+    public const STATUS_RECORDED = 'Recorded';
+
+    public const STATUS_REVERSED = 'Reversed';
+
     /** @use HasFactory<PaymentFactory> */
     use HasFactory;
 
@@ -47,6 +52,11 @@ class Payment extends Model
     public function reverser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reversed_by');
+    }
+
+    public function scopeValid(Builder $query): Builder
+    {
+        return $query->where('status', self::STATUS_RECORDED);
     }
 
     protected static function booted(): void

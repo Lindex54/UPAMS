@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Users | UPAMS')
+@section('title', 'Users | Property Management')
 @section('page-heading', 'Users')
 
 @section('content')
@@ -10,7 +10,7 @@
                 <div>
                     <p class="text-sm font-semibold tracking-[0.12em] text-busitema-blue uppercase">System Administration</p>
                     <h2 class="mt-2 text-2xl font-semibold text-heading">User accounts</h2>
-                    <p class="mt-2 text-sm leading-6 text-body-text">Create accounts, update basic details, and control access to UPAMS.</p>
+                    <p class="mt-2 text-sm leading-6 text-body-text">Create accounts, update basic details, and control access to Property Management.</p>
                 </div>
 
                 <a

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title',$meter->meter_number.' | UPAMS') @section('portal-label','Finance & Utilities') @section('page-heading','Meter '.$meter->meter_number)
+@section('title',$meter->meter_number.' | Property Management') @section('portal-label','Finance & Utilities') @section('page-heading','Meter '.$meter->meter_number)
 @section('content')
 @include('admin.partials.flash')
 <div class="rounded-2xl border border-border bg-white p-6 dark:bg-slate-900"><div class="grid gap-4 sm:grid-cols-4">@foreach(['Utility'=>$meter->type->name,'Campus'=>$meter->campus->name,'Payer'=>$meter->beneficiary?->full_name_organization ?? 'University','Rate'=>'UGX '.number_format($meter->rate,4).'/'.$meter->unit] as $label=>$value)<div><p class="text-xs uppercase text-body-text">{{ $label }}</p><p class="font-bold">{{ $value }}</p></div>@endforeach</div><div class="mt-5 text-xs text-body-text">Created By: {{ $meter->creator?->name ?? 'System' }} · Created At: {{ $meter->created_at->format('d M Y H:i') }} · Last Updated By: {{ $meter->updater?->name ?? 'System' }} · Last Updated At: {{ $meter->updated_at->format('d M Y H:i') }}</div></div>

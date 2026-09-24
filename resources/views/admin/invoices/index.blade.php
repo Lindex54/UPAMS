@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Billing & Invoices | UPAMS')
+@section('title', 'Billing & Invoices | Property Management')
 @section('portal-label', 'Finance & Utilities')
 @section('page-heading', 'Billing & Invoices')
 @section('content')

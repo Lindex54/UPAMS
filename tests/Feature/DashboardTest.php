@@ -2,11 +2,23 @@
 
 namespace Tests\Feature;
 
+use App\Models\Agreement;
+use App\Models\Approval;
+use App\Models\Asset;
+use App\Models\AssetCategory;
+use App\Models\AssetType;
+use App\Models\Campus;
+use App\Models\Document;
+use App\Models\MaintenanceRequest;
+use App\Models\OrgUnit;
 use App\Models\User;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
+    use LazilyRefreshDatabase;
+
     public function test_authenticated_user_sees_the_complete_dashboard_sidebar(): void
     {
         $user = User::factory()->make();
@@ -251,5 +263,91 @@ class DashboardTest extends TestCase
                 'Land Management',
                 'Maintenance Overview',
             ]);
+    }
+
+    public function test_dashboard_renders_live_metrics_from_stored_records(): void
+    {
+        $this->travelTo('2026-09-09 10:00:00');
+        $campus = Campus::factory()->create(['name' => 'Main Campus']);
+        $unit = OrgUnit::factory()->create(['name' => 'Estates Office']);
+        $category = AssetCategory::factory()->create(['name' => 'Equipment & Machinery']);
+        $type = AssetType::factory()->create(['asset_category_id' => $category->id, 'name' => 'Generators']);
+        $user = User::factory()->create(['campus_id' => $campus->id, 'org_unit_id' => $unit->id]);
+        User::factory()->inactive()->create(['campus_id' => $campus->id, 'org_unit_id' => $unit->id]);
+
+        $asset = Asset::factory()->create([
+            'campus_id' => $campus->id,
+            'org_unit_id' => $unit->id,
+            'asset_category_id' => $category->id,
+            'asset_type_id' => $type->id,
+            'status' => 'Under Maintenance',
+            'condition' => 'Critical',
+            'next_service_at' => today()->addDays(5),
+            'calibration_due_at' => today()->addDays(10),
+        ]);
+        Agreement::factory()->create(['campus_id' => $campus->id, 'org_unit_id' => $unit->id, 'status' => 'Active', 'expires_at' => today()->addDays(20)]);
+        Approval::factory()->create(['campus_id' => $campus->id, 'status' => 'Pending']);
+        Document::factory()->create(['campus_id' => $campus->id, 'org_unit_id' => $unit->id, 'expires_at' => today()->addDays(40)]);
+        MaintenanceRequest::factory()->create(['asset_id' => $asset->id, 'campus_id' => $campus->id, 'org_unit_id' => $unit->id, 'priority' => 'High', 'status' => 'Repair']);
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
+
+        $response
+            ->assertOk()
+            ->assertViewHas('metrics', fn (array $metrics): bool => $metrics['totalAssets'] === 1
+                && $metrics['totalUsers'] === 2
+                && $metrics['underMaintenance'] === 1
+                && $metrics['poorCritical'] === 1
+                && $metrics['activeAgreements'] === 1
+                && $metrics['pendingApprovals'] === 1
+                && $metrics['expiringDocuments'] === 1)
+            ->assertSee('Live data')
+            ->assertSee('Equipment &amp; Machinery', escape: false)
+            ->assertSee('User created');
+    }
+
+    public function test_dashboard_filters_assets_by_campus_type_status_unit_and_date_range(): void
+    {
+        $this->travelTo('2026-09-09 10:00:00');
+        $mainCampus = Campus::factory()->create(['name' => 'Main Campus']);
+        $otherCampus = Campus::factory()->create(['name' => 'Arapai Campus']);
+        $unit = OrgUnit::factory()->create(['name' => 'Facilities Office']);
+        $category = AssetCategory::factory()->create(['name' => 'Vehicles']);
+        $type = AssetType::factory()->create(['asset_category_id' => $category->id, 'name' => 'Motor Vehicles']);
+        $user = User::factory()->create();
+
+        Asset::factory()->create(['campus_id' => $mainCampus->id, 'org_unit_id' => $unit->id, 'asset_category_id' => $category->id, 'asset_type_id' => $type->id, 'condition' => 'Critical']);
+        Asset::factory()->create(['campus_id' => $otherCampus->id, 'org_unit_id' => $unit->id, 'asset_category_id' => $category->id, 'asset_type_id' => $type->id, 'condition' => 'Critical']);
+        Asset::factory()->create(['campus_id' => $mainCampus->id, 'org_unit_id' => $unit->id, 'asset_category_id' => $category->id, 'asset_type_id' => $type->id, 'condition' => 'Good']);
+        Asset::factory()->create(['campus_id' => $mainCampus->id, 'org_unit_id' => $unit->id, 'asset_category_id' => $category->id, 'asset_type_id' => $type->id, 'condition' => 'Critical', 'created_at' => today()->subMonths(13)]);
+
+        $response = $this->actingAs($user)->get(route('dashboard', [
+            'campus_id' => $mainCampus->id,
+            'asset_type_id' => $type->id,
+            'status' => 'poor_critical',
+            'org_unit_id' => $unit->id,
+            'date_range' => 'last_12_months',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertViewHas('metrics', fn (array $metrics): bool => $metrics['totalAssets'] === 1 && $metrics['poorCritical'] === 1)
+            ->assertSee('Main Campus')
+            ->assertSee('Motor Vehicles')
+            ->assertSee('Poor / Critical');
+    }
+
+    public function test_dashboard_rejects_invalid_filter_values(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->from(route('dashboard'))->get(route('dashboard', [
+            'status' => 'invented-status',
+            'date_range' => 'all-time-forever',
+        ]));
+
+        $response
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHasErrors(['status', 'date_range']);
     }
 }

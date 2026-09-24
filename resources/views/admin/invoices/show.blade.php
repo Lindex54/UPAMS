@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $invoice->reference.' | UPAMS')
+@section('title', $invoice->reference.' | Property Management')
 @section('portal-label', 'Finance & Utilities')
 @section('page-heading', 'Invoice '.$invoice->reference)
 @section('content')

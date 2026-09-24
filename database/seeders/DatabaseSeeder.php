@@ -19,6 +19,10 @@ class DatabaseSeeder extends Seeder
             CampusSeeder::class,
             OrgUnitSeeder::class,
             RoleSeeder::class,
+            AssetCategorySeeder::class,
+            AssetTypeSeeder::class,
+            IctAssetTypeSeeder::class,
+            NotificationTemplateSeeder::class,
         ]);
 
         // User::factory(10)->create();

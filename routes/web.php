@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\BeneficiaryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ArrearsController;
 use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\Finance\PaymentController;
@@ -11,9 +12,16 @@ use App\Http\Controllers\Governance\ApprovalController;
 use App\Http\Controllers\Governance\AuditTrailController;
 use App\Http\Controllers\Governance\NotificationController;
 use App\Http\Controllers\Governance\ReportController;
+use App\Http\Controllers\Technician\ActivityController as TechnicianActivityController;
+use App\Http\Controllers\Technician\ComputerLabController as TechnicianComputerLabController;
+use App\Http\Controllers\Technician\DashboardController as TechnicianDashboardController;
+use App\Http\Controllers\Technician\EquipmentController as TechnicianEquipmentController;
+use App\Http\Controllers\Technician\FaultController as TechnicianFaultController;
+use App\Http\Controllers\Technician\WorkspaceController as TechnicianWorkspaceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserStatusController;
 use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\RestrictItTechnicianWorkspace;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function (): void {
@@ -25,7 +33,28 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::middleware(EnsureUserIsActive::class)->group(function (): void {
+    Route::middleware([EnsureUserIsActive::class, RestrictItTechnicianWorkspace::class])->group(function (): void {
+        Route::prefix('technician')->name('technician.')->group(function (): void {
+            Route::get('/dashboard', TechnicianDashboardController::class)->name('dashboard');
+            Route::resource('equipment', TechnicianEquipmentController::class)->parameters(['equipment' => 'asset'])->except('destroy');
+            Route::resource('labs', TechnicianComputerLabController::class)->except('destroy');
+            Route::resource('faults', TechnicianFaultController::class)->except('destroy');
+            Route::get('/assignments', [TechnicianWorkspaceController::class, 'assignments'])->name('assignments.index');
+            Route::post('/assignments', [TechnicianWorkspaceController::class, 'storeAssignment'])->name('assignments.store');
+            Route::get('/maintenance', [TechnicianWorkspaceController::class, 'maintenance'])->name('maintenance.index');
+            Route::get('/inspections', [TechnicianWorkspaceController::class, 'inspections'])->name('inspections.index');
+            Route::post('/inspections', [TechnicianWorkspaceController::class, 'storeInspection'])->name('inspections.store');
+            Route::get('/transfers', [TechnicianWorkspaceController::class, 'transfers'])->name('transfers.index');
+            Route::post('/transfers', [TechnicianWorkspaceController::class, 'storeTransfer'])->name('transfers.store');
+            Route::patch('/transfers/{transfer}', [TechnicianWorkspaceController::class, 'updateTransfer'])->name('transfers.update');
+            Route::get('/documents/{document}/download', [TechnicianWorkspaceController::class, 'downloadDocument'])->name('documents.download');
+            Route::get('/documents', [TechnicianWorkspaceController::class, 'documents'])->name('documents.index');
+            Route::post('/documents', [TechnicianWorkspaceController::class, 'storeDocument'])->name('documents.store');
+            Route::get('/reports/export', [TechnicianWorkspaceController::class, 'exportReport'])->name('reports.export');
+            Route::get('/reports', [TechnicianWorkspaceController::class, 'reports'])->name('reports.index');
+            Route::get('/activity/{type}/{record}', TechnicianActivityController::class)->whereIn('type', ['equipment', 'labs', 'faults', 'assignments', 'inspections', 'transfers', 'documents'])->whereNumber('record')->name('activity.show');
+        });
+
         Route::patch('/users/{user}/status', UserStatusController::class)->name('users.status.update');
         Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
@@ -162,7 +191,7 @@ Route::middleware('auth')->group(function (): void {
             'page' => 'termination',
         ])->name('operations.agreements.termination');
 
-        Route::view('/dashboard', 'dashboard')->name('dashboard');
+        Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::view('/estates/dashboard', 'estates.dashboard')->name('estates.dashboard');
         Route::view('/management/dashboard', 'management.dashboard')->name('management.dashboard');
         Route::view('/campus/dashboard', 'campus.dashboard')->name('campus.dashboard');

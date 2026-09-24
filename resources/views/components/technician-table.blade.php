@@ -1,0 +1,2 @@
+@props(['headers'])
+<div class="overflow-hidden rounded-xl border border-border bg-white shadow-sm"><div class="overflow-x-auto"><table class="w-full min-w-[850px] text-left text-sm"><thead class="bg-light-background text-xs font-semibold uppercase text-body-text"><tr>@foreach($headers as $header)<th class="px-5 py-3">{{ $header }}</th>@endforeach</tr></thead><tbody class="divide-y divide-border">{{ $slot }}</tbody></table></div></div>

@@ -18,4 +18,14 @@ class OrgUnit extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function assets(): HasMany
+    {
+        return $this->hasMany(Asset::class);
+    }
+
+    public function computerLabs(): HasMany
+    {
+        return $this->hasMany(ComputerLab::class);
+    }
 }

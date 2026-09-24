@@ -12,7 +12,7 @@ class AuthenticatedSessionControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_home_page_identifies_upams_and_displays_the_login_controls(): void
+    public function test_home_page_identifies_property_management_and_displays_the_login_controls(): void
     {
         $response = $this->get(route('home'));
 
@@ -23,7 +23,7 @@ class AuthenticatedSessionControllerTest extends TestCase
             ->assertSee('images/busitema-logo.png', escape: false)
             ->assertSee('Email address')
             ->assertSee('Forgot password?')
-            ->assertSee('Sign in to UPAMS');
+            ->assertSee('Sign in to Property Management');
     }
 
     public function test_login_requires_an_email_address_and_password(): void

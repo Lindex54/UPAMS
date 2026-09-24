@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', ($invoice->exists ? 'Correct' : 'Create').' Invoice | UPAMS')
+@section('title', ($invoice->exists ? 'Correct' : 'Create').' Invoice | Property Management')
 @section('portal-label', 'Finance & Utilities')
 @section('page-heading', $invoice->exists ? 'Correct invoice' : 'Create invoice')
 @section('content')

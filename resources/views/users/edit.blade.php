@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit User | UPAMS')
+@section('title', 'Edit User | Property Management')
 @section('page-heading', 'Edit User')
 
 @section('content')

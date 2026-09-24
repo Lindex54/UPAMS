@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add User | UPAMS')
+@section('title', 'Add User | Property Management')
 @section('page-heading', 'Add User')
 
 @section('content')

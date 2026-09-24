@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Sign in | UPAMS')
+@section('title', 'Sign in | Property Management')
 
 @section('content')
     <div
@@ -22,7 +22,7 @@
                 <h1 class="text-[clamp(1.875rem,3vw,3.75rem)] font-semibold leading-[1.14] tracking-tight text-white">
                     <span class="block whitespace-nowrap">University Property and</span>
                     <span class="block whitespace-nowrap">Asset Management System</span>
-                    <span class="block whitespace-nowrap">(UPAMS)</span>
+                    <span class="block whitespace-nowrap">(Property Management)</span>
                 </h1>
             </div>
 
@@ -43,7 +43,7 @@
 
                 <div class="rounded-2xl border border-border bg-white p-6 shadow-[0_18px_55px_rgba(0,31,63,0.08)] sm:p-9 lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
                     <div>
-                        <p class="text-sm font-semibold tracking-[0.14em] text-busitema-blue uppercase">UPAMS Portal</p>
+                        <p class="text-sm font-semibold tracking-[0.14em] text-busitema-blue uppercase">Property Management Portal</p>
                         <h2 class="mt-2 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">Sign in to your account</h2>
                         <p class="mt-3 text-base leading-7 text-body-text">
                             Enter your university account details to continue.
@@ -151,14 +151,14 @@
                             id="password-assistance"
                             role="status"
                         >
-                            Contact your UPAMS system administrator to securely reset your university account password.
+                            Contact your Property Management system administrator to securely reset your university account password.
                         </div>
 
                         <button
                             class="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-lg bg-busitema-gold px-5 py-3 text-base font-semibold text-busitema-navy shadow-sm transition hover:bg-busitema-yellow focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-busitema-blue active:translate-y-px"
                             type="submit"
                         >
-                            Sign in to UPAMS
+                            Sign in to Property Management
                         </button>
                     </form>
                 </div>

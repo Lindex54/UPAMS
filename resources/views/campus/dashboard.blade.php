@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Campus Property Dashboard | UPAMS')
+@section('title', 'Campus Property Dashboard | Property Management')
 @section('page-heading', 'Campus Property Operations')
-@section('portal-label', 'UPAMS Campus Property Management')
+@section('portal-label', 'Property Management · Campus')
 @section('user-role', 'Campus Property Officer')
 @section('user-initial', 'C')
 

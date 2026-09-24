@@ -21,7 +21,7 @@ class InvoiceController extends Controller
     public function index(Request $request): View
     {
         $query = $this->filteredQuery($request);
-        $openInvoices = Invoice::query()->withSum(['payments as payments_sum_amount' => fn (Builder $payments) => $payments->where('status', 'Recorded')], 'amount')->whereNotIn('status', ['Paid', 'Cancelled', 'Archived', 'Draft'])->get();
+        $openInvoices = Invoice::query()->withSum('validPayments as payments_sum_amount', 'amount')->whereNotIn('status', ['Paid', 'Cancelled', 'Archived', 'Draft'])->get();
 
         return view('admin.invoices.index', [
             'invoices' => $query->paginate(15)->withQueryString(),
@@ -81,7 +81,7 @@ class InvoiceController extends Controller
 
     private function filteredQuery(Request $request): Builder
     {
-        return Invoice::query()->with(['beneficiary', 'campus', 'creator', 'updater'])->withSum(['payments as payments_sum_amount' => fn (Builder $query) => $query->where('status', 'Recorded')], 'amount')
+        return Invoice::query()->with(['beneficiary', 'campus', 'creator', 'updater'])->withSum('validPayments as payments_sum_amount', 'amount')
             ->when($request->string('q')->toString(), fn (Builder $query, string $q): Builder => $query->where(fn (Builder $nested): Builder => $nested->where('reference', 'like', "%{$q}%")->orWhereHas('beneficiary', fn (Builder $beneficiary): Builder => $beneficiary->where('full_name_organization', 'like', "%{$q}%"))))
             ->when($request->integer('campus_id'), fn (Builder $query, int $id): Builder => $query->where('campus_id', $id))
             ->when($request->string('status')->toString(), fn (Builder $query, string $status): Builder => $query->where('status', $status))->latest();

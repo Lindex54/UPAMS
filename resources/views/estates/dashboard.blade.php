@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Estates Dashboard | UPAMS')
+@section('title', 'Estates Dashboard | Property Management')
 @section('page-heading', 'Property & Estates Overview')
-@section('portal-label', 'UPAMS Estates Management')
+@section('portal-label', 'Property Management · Estates')
 @section('user-role', 'University Estates Manager')
 @section('user-initial', 'E')
 

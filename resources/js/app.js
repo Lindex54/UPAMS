@@ -116,4 +116,69 @@ Alpine.data('ugandaLocationSelector', (configuration) => ({
     },
 }));
 
+// Turn a latitude/longitude pair into OpenStreetMap previews and external map links.
+Alpine.data('gpsLocationPreview', (configuration = {}) => ({
+    latitude: String(configuration.latitude ?? ''),
+    longitude: String(configuration.longitude ?? ''),
+    mapOpen: false,
+
+    get coordinates() {
+        if (String(this.latitude).trim() === '' || String(this.longitude).trim() === '') {
+            return null;
+        }
+
+        const latitude = Number(this.latitude);
+        const longitude = Number(this.longitude);
+
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
+            return null;
+        }
+
+        return { latitude, longitude };
+    },
+
+    get hasLocation() {
+        return this.coordinates !== null;
+    },
+
+    get coordinateLabel() {
+        return this.hasLocation
+            ? `${this.coordinates.latitude.toFixed(6)}, ${this.coordinates.longitude.toFixed(6)}`
+            : '';
+    },
+
+    embedUrl(span = 0.004) {
+        if (!this.hasLocation) {
+            return 'about:blank';
+        }
+
+        const { latitude, longitude } = this.coordinates;
+        const boundingBox = [longitude - span, latitude - span, longitude + span, latitude + span].map((edge) => edge.toFixed(7)).join(',');
+
+        return `https://www.openstreetmap.org/export/embed.html?bbox=${boundingBox}&layer=mapnik&marker=${latitude},${longitude}`;
+    },
+
+    get googleMapsUrl() {
+        return this.hasLocation
+            ? `https://www.google.com/maps/search/?api=1&query=${this.coordinates.latitude},${this.coordinates.longitude}`
+            : '#';
+    },
+
+    get openStreetMapUrl() {
+        return this.hasLocation
+            ? `https://www.openstreetmap.org/?mlat=${this.coordinates.latitude}&mlon=${this.coordinates.longitude}#map=17/${this.coordinates.latitude}/${this.coordinates.longitude}`
+            : '#';
+    },
+
+    openMap() {
+        if (this.hasLocation) {
+            this.mapOpen = true;
+        }
+    },
+
+    closeMap() {
+        this.mapOpen = false;
+    },
+}));
+
 Alpine.start();

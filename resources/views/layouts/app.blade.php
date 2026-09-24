@@ -8,7 +8,7 @@
 
         <x-theme-script />
 
-        <title>@yield('title', 'UPAMS')</title>
+        <title>@yield('title', 'Property Management')</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -36,7 +36,7 @@
         >
             <header class="flex min-h-20 items-center justify-between border-b border-border bg-white px-5 sm:px-8">
                 <div>
-                    <p class="text-xs font-semibold tracking-[0.14em] text-busitema-blue uppercase">@yield('portal-label', 'UPAMS Administration')</p>
+                    <p class="text-xs font-semibold tracking-[0.14em] text-busitema-blue uppercase">@yield('portal-label', 'Property Management Administration')</p>
                     <h1 class="mt-1 text-2xl font-semibold text-heading">@yield('page-heading', 'Dashboard')</h1>
                 </div>
 

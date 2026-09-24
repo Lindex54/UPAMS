@@ -18,6 +18,7 @@ class RoleSeeder extends Seeder
             'University Management',
             'Campus Property Officer',
             'Finance Officer',
+            'IT Technician',
         ] as $role) {
             Role::query()->firstOrCreate(['name' => $role]);
         }

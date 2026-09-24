@@ -18,6 +18,13 @@ use LogicException;
 ])]
 class Invoice extends Model
 {
+    public const AGING_BUCKETS = [
+        'Under 30 Days',
+        '30–60 Days',
+        '60–90 Days',
+        'Over 90 Days',
+    ];
+
     /** @use HasFactory<InvoiceFactory> */
     use HasFactory;
 
@@ -36,6 +43,11 @@ class Invoice extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function validPayments(): HasMany
+    {
+        return $this->payments()->valid();
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -49,7 +61,7 @@ class Invoice extends Model
     public function paidAmount(): float
     {
         return (float) ($this->payments_sum_amount
-            ?? $this->payments()->where('status', 'Recorded')->sum('amount'));
+            ?? $this->validPayments()->sum('amount'));
     }
 
     public function balance(): float
@@ -65,10 +77,10 @@ class Invoice extends Model
     public function agingBucket(): string
     {
         return match (true) {
-            $this->daysOverdue() < 30 => 'Under 30 days',
-            $this->daysOverdue() < 60 => '30-60 days',
-            $this->daysOverdue() <= 90 => '60-90 days',
-            default => 'Over 90 days',
+            $this->daysOverdue() < 30 => self::AGING_BUCKETS[0],
+            $this->daysOverdue() <= 60 => self::AGING_BUCKETS[1],
+            $this->daysOverdue() <= 90 => self::AGING_BUCKETS[2],
+            default => self::AGING_BUCKETS[3],
         };
     }
 
@@ -103,6 +115,7 @@ class Invoice extends Model
             'tax_amount' => 'decimal:2',
             'total_amount' => 'decimal:2',
             'cancelled_at' => 'datetime',
+            'last_payment_at' => 'datetime',
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AssetCategory;
 use Illuminate\Database\Seeder;
 
 class AssetCategorySeeder extends Seeder
@@ -11,6 +12,8 @@ class AssetCategorySeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        foreach (['Buildings & Spaces', 'Equipment & Machinery', 'Furniture & Fittings', 'Vehicles', 'Land & Other Property', 'ICT Equipment'] as $category) {
+            AssetCategory::query()->firstOrCreate(['name' => $category]);
+        }
     }
 }

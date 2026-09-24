@@ -49,6 +49,26 @@
                         </label>
                     @endforeach
 
+                    <div class="sm:col-span-2">
+                        <div class="rounded-xl border border-border bg-light-background p-4" x-data="gpsLocationPreview(@js(['latitude' => $isEdit ? ($record['latitude'] ?? '') : '', 'longitude' => $isEdit ? ($record['longitude'] ?? '') : '']))">
+                            <div>
+                                <p class="text-sm font-semibold text-heading">GPS location</p>
+                                <p class="mt-1 text-xs leading-5 text-body-text">Enter latitude and longitude together to identify this item or property's precise location.</p>
+                            </div>
+                            <div class="mt-4 grid gap-5 sm:grid-cols-2">
+                                <label class="flex flex-col gap-2 text-sm font-semibold text-heading">
+                                    <span>GPS Latitude <span class="font-normal text-body-text">(optional)</span></span>
+                                    <input class="min-h-11 rounded-lg border border-border bg-white px-3 text-sm font-normal text-heading outline-none transition placeholder:text-body-text/60 focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" type="number" name="latitude" x-model.debounce.400ms="latitude" min="-90" max="90" step="0.0000001" inputmode="decimal" placeholder="1.2345678" value="{{ $isEdit ? ($record['latitude'] ?? '') : '' }}">
+                                </label>
+                                <label class="flex flex-col gap-2 text-sm font-semibold text-heading">
+                                    <span>GPS Longitude <span class="font-normal text-body-text">(optional)</span></span>
+                                    <input class="min-h-11 rounded-lg border border-border bg-white px-3 text-sm font-normal text-heading outline-none transition placeholder:text-body-text/60 focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" type="number" name="longitude" x-model.debounce.400ms="longitude" min="-180" max="180" step="0.0000001" inputmode="decimal" placeholder="33.1234567" value="{{ $isEdit ? ($record['longitude'] ?? '') : '' }}">
+                                </label>
+                            </div>
+                            <x-location-map-live class="mt-4" :title="$isEdit ? $record['name'] : 'New '.strtolower($design['singular'])" />
+                        </div>
+                    </div>
+
                     @if ($module === 'assets')
                         <div
                             class="sm:col-span-2"
