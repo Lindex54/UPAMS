@@ -122,7 +122,7 @@ class ArrearsTest extends TestCase
 
         $this->assertFalse(app(ArrearsCalculationService::class)->query()->whereKey($invoice)->exists());
 
-        $billing->reversePayment($payment, 'The payment was applied to the wrong invoice.', $administrator);
+        $billing->reversePayment($payment, 'The payment was applied to the wrong invoice.', User::factory()->create());
 
         $arrearsInvoice = app(ArrearsCalculationService::class)->query()->whereKey($invoice)->sole();
         $this->assertSame(500000.0, $arrearsInvoice->balance());

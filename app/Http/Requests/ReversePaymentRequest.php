@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Payment;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,9 @@ class ReversePaymentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return (bool) $this->user()?->is_active;
+        $payment = $this->route('payment');
+
+        return $payment instanceof Payment && (bool) $this->user()?->can('reverse', $payment);
     }
 
     /**

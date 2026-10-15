@@ -15,6 +15,15 @@ class BillingService
     {
         return DB::transaction(function () use ($data, $actor, $invoice): Invoice {
             $invoice = $invoice?->newQuery()->lockForUpdate()->findOrFail($invoice->getKey()) ?? new Invoice;
+
+            if ($invoice->isClosed()) {
+                throw ValidationException::withMessages(['status' => "A {$invoice->status} invoice can no longer be changed."]);
+            }
+
+            if ($invoice->hasLockedFinancialTerms()) {
+                return $this->correctIssuedInvoice($invoice, $data, $actor);
+            }
+
             $paid = $invoice->exists ? $invoice->validPayments()->sum('amount') : 0;
             $total = round((float) $data['subtotal'] + (float) ($data['tax_amount'] ?? 0), 2);
 
@@ -32,12 +41,62 @@ class BillingService
         });
     }
 
+    /**
+     * Cancel an unpaid invoice or archive a settled one.
+     *
+     * @param  'Cancelled'|'Archived'  $status
+     */
+    public function closeInvoice(Invoice $invoice, string $status, string $reason, User $actor): Invoice
+    {
+        return DB::transaction(function () use ($invoice, $status, $reason, $actor): Invoice {
+            $invoice = Invoice::query()->lockForUpdate()->findOrFail($invoice->getKey());
+
+            if ($invoice->isClosed()) {
+                throw ValidationException::withMessages(['status' => "This invoice is already {$invoice->status}."]);
+            }
+
+            if ($status === Invoice::STATUS_CANCELLED && ! $invoice->canBeCancelled()) {
+                throw ValidationException::withMessages(['status' => 'This invoice has payments recorded and cannot be cancelled. Reverse the payments first if the invoice was raised in error.']);
+            }
+
+            if ($status === Invoice::STATUS_ARCHIVED && ! $invoice->canBeArchived()) {
+                throw ValidationException::withMessages(['status' => 'Only fully paid invoices can be archived. Open balances must stay visible in arrears.']);
+            }
+
+            $invoice->update(['status' => $status, 'cancellation_reason' => $reason, 'cancelled_at' => now(), 'updated_by' => $actor->id]);
+
+            return $invoice->refresh();
+        });
+    }
+
+    /**
+     * Apply descriptive corrections to an issued invoice without touching its financial terms.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function correctIssuedInvoice(Invoice $invoice, array $data, User $actor): Invoice
+    {
+        $lockedFields = array_diff(array_keys($data), Invoice::EDITABLE_AFTER_ISSUE);
+
+        if ($lockedFields !== []) {
+            throw ValidationException::withMessages(array_fill_keys($lockedFields, 'This field is locked because the invoice has already been issued.'));
+        }
+
+        $invoice->fill($data + ['updated_by' => $actor->id])->save();
+
+        return $invoice->refresh();
+    }
+
     /** @param array<string, mixed> $data */
     public function recordPayment(array $data, User $actor): Payment
     {
         return DB::transaction(function () use ($data, $actor): Payment {
             $invoice = Invoice::query()->lockForUpdate()->findOrFail($data['invoice_id']);
-            if (in_array($invoice->status, ['Cancelled', 'Archived'], true) || (float) $data['amount'] > $invoice->balance()) {
+            if ($invoice->isDraft()) {
+                throw ValidationException::withMessages(['invoice_id' => 'Issue this invoice before recording payments against it.']);
+            }
+
+            if ($invoice->isClosed() || (float) $data['amount'] > $invoice->balance()) {
                 throw ValidationException::withMessages(['amount' => 'Payment must not exceed the open balance on an active invoice.']);
             }
 
@@ -60,6 +119,10 @@ class BillingService
             $payment = Payment::query()->lockForUpdate()->findOrFail($payment->id);
             if ($payment->status === Payment::STATUS_REVERSED) {
                 throw ValidationException::withMessages(['reason' => 'This payment has already been reversed.']);
+            }
+
+            if ($payment->wasRecordedBy($actor)) {
+                throw ValidationException::withMessages(['reason' => 'You recorded this payment, so another Finance Officer or System Administrator must reverse it.']);
             }
 
             $payment->update(['status' => Payment::STATUS_REVERSED, 'reversal_reason' => $reason, 'reversed_at' => now(), 'reversed_by' => $actor->id, 'updated_by' => $actor->id]);

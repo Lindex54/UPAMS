@@ -25,6 +25,21 @@ class Invoice extends Model
         'Over 90 Days',
     ];
 
+    public const STATUS_DRAFT = 'Draft';
+
+    public const STATUS_ISSUED = 'Issued';
+
+    public const STATUS_CANCELLED = 'Cancelled';
+
+    public const STATUS_ARCHIVED = 'Archived';
+
+    /**
+     * Fields that may still be corrected after an invoice has been issued.
+     *
+     * @var list<string>
+     */
+    public const EDITABLE_AFTER_ISSUE = ['description', 'property_reference', 'asset_reference', 'agreement_reference'];
+
     /** @use HasFactory<InvoiceFactory> */
     use HasFactory;
 
@@ -82,6 +97,45 @@ class Invoice extends Model
             $this->daysOverdue() <= 90 => self::AGING_BUCKETS[2],
             default => self::AGING_BUCKETS[3],
         };
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->status === self::STATUS_DRAFT;
+    }
+
+    public function isClosed(): bool
+    {
+        return in_array($this->status, [self::STATUS_CANCELLED, self::STATUS_ARCHIVED], true);
+    }
+
+    /**
+     * Issued invoices keep their financial terms; only descriptive fields can change.
+     */
+    public function hasLockedFinancialTerms(): bool
+    {
+        return $this->exists && ! $this->isDraft();
+    }
+
+    public function hasValidPayments(): bool
+    {
+        return $this->validPayments()->exists();
+    }
+
+    /**
+     * Only invoices without any active payment may be voided.
+     */
+    public function canBeCancelled(): bool
+    {
+        return ! $this->isClosed() && ! $this->hasValidPayments();
+    }
+
+    /**
+     * Archiving files away a settled invoice so open debts can never be hidden from arrears.
+     */
+    public function canBeArchived(): bool
+    {
+        return ! $this->isClosed() && ! $this->isDraft() && $this->balance() <= 0;
     }
 
     public function paymentStatus(): string

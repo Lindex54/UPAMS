@@ -19,12 +19,7 @@
 
     <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="{{ $design['title'] }} overview">
         @foreach ($design['summary'] as [$label, $value, $detail])
-            <article class="relative overflow-hidden rounded-xl border border-border bg-white p-5 shadow-sm">
-                <div class="absolute inset-y-0 left-0 w-1 {{ $loop->index === 2 ? 'bg-amber-500' : ($loop->index === 3 ? 'bg-red-500' : 'bg-busitema-blue') }}" aria-hidden="true"></div>
-                <p class="text-sm font-medium text-body-text">{{ $label }}</p>
-                <p class="mt-2 text-2xl font-semibold tracking-tight text-heading">{{ $value }}</p>
-                <p class="mt-2 text-xs text-body-text">{{ $detail }}</p>
-            </article>
+            <x-stat-card :label="$label" :value="$value" :detail="$detail" :tone="['blue', 'green', 'orange', 'red'][$loop->index]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 20V10m7 10V4m7 16v-7" /></svg></x-stat-card>
         @endforeach
     </section>
 

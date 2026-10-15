@@ -8,6 +8,8 @@
         'commercial-property' => ['Property / Unit Name', 'Property Type', 'Occupancy Status'],
         'agricultural-property' => ['Property Name', 'Property Type', 'Current Use', 'Infrastructure Condition'],
     ][$module] ?? [];
+    $fieldsAllowingOther = ['Asset Category', 'Tenure Type', 'Building Type', 'Equipment Type', 'Vehicle Type', 'Fuel Type', 'Property Type', 'Current Use'];
+    $otherOptionValue = '__other';
 @endphp
 
 <div class="mx-auto flex max-w-6xl flex-col gap-6" x-data="{ section: 'record' }">
@@ -35,18 +37,31 @@
                             [$label, $type, $placeholder, $editValue, $options] = array_pad($field, 5, []);
                             $isRequired = in_array($label, $requiredFields, true);
                             $fieldName = str($label)->slug('_');
+                            $allowsOther = $type === 'select' && in_array($label, $fieldsAllowingOther, true);
+                            $hasCustomValue = $allowsOther && $isEdit && filled($editValue) && ! in_array($editValue, $options, true);
+                            $initialChoice = $hasCustomValue ? $otherOptionValue : ($isEdit ? $editValue : '');
                         @endphp
-                        <label class="flex flex-col gap-2 text-sm font-semibold text-heading {{ in_array($label, ['Physical Location', 'Current Use', 'Primary Function', 'Assigned Unit / Driver', 'Area / Capacity']) ? 'sm:col-span-2' : '' }}">
-                            <span>{{ $label }} @if ($isRequired)<span class="text-red-600">*</span>@else<span class="font-normal text-body-text">(optional)</span>@endif</span>
-                            @if ($type === 'select')
-                                <select class="min-h-11 rounded-lg border border-border bg-white px-3 text-sm font-normal text-heading outline-none transition focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" name="{{ $fieldName }}" @required($isRequired)>
-                                    @if (! $isEdit)<option value="">Select {{ strtolower($label) }}</option>@endif
-                                    @foreach ($options as $option)<option @selected($isEdit && $option === $editValue)>{{ $option }}</option>@endforeach
-                                </select>
-                            @else
-                                <input class="min-h-11 rounded-lg border border-border bg-white px-3 text-sm font-normal text-heading outline-none transition placeholder:text-body-text/60 focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" type="{{ $type }}" name="{{ $fieldName }}" placeholder="{{ $placeholder }}" value="{{ $isEdit ? ($type === 'number' ? str_replace(',', '', $editValue) : $editValue) : '' }}" @required($isRequired)>
+                        <div class="flex flex-col gap-2 {{ in_array($label, ['Physical Location', 'Current Use', 'Primary Function', 'Assigned Unit / Driver', 'Area / Capacity']) ? 'sm:col-span-2' : '' }}" @if ($allowsOther) x-data="{ choice: @js($initialChoice) }" @endif>
+                            <label class="flex flex-col gap-2 text-sm font-semibold text-heading">
+                                <span>{{ $label }} @if ($isRequired)<span class="text-red-600">*</span>@else<span class="font-normal text-body-text">(optional)</span>@endif</span>
+                                @if ($type === 'select')
+                                    <select class="min-h-11 rounded-lg border border-border bg-white px-3 text-sm font-normal text-heading outline-none transition focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" name="{{ $fieldName }}" @required($isRequired) @if ($allowsOther) x-model="choice" x-on:change="if (choice === '{{ $otherOptionValue }}') $nextTick(() => $refs.otherInput.focus())" @endif>
+                                        @if (! $isEdit || $allowsOther)<option value="">Select {{ strtolower($label) }}</option>@endif
+                                        @foreach ($options as $option)<option value="{{ $option }}" @selected($isEdit && $option === $editValue)>{{ $option }}</option>@endforeach
+                                        @if ($allowsOther)<option value="{{ $otherOptionValue }}" @selected($hasCustomValue)>Other (specify)</option>@endif
+                                    </select>
+                                @else
+                                    <input class="min-h-11 rounded-lg border border-border bg-white px-3 text-sm font-normal text-heading outline-none transition placeholder:text-body-text/60 focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" type="{{ $type }}" name="{{ $fieldName }}" placeholder="{{ $placeholder }}" value="{{ $isEdit ? ($type === 'number' ? str_replace(',', '', $editValue) : $editValue) : '' }}" @required($isRequired)>
+                                @endif
+                            </label>
+                            @if ($allowsOther)
+                                <div class="flex flex-col gap-1.5" x-show="choice === '{{ $otherOptionValue }}'" x-cloak x-transition.opacity>
+                                    <label class="sr-only" for="{{ $fieldName }}_other">Specify other {{ strtolower($label) }}</label>
+                                    <input class="min-h-11 rounded-lg border border-busitema-blue/40 bg-white px-3 text-sm font-normal text-heading outline-none transition placeholder:text-body-text/60 focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" type="text" id="{{ $fieldName }}_other" name="{{ $fieldName }}_other" maxlength="120" placeholder="Type the {{ strtolower($label) }} not listed above" value="{{ $hasCustomValue ? $editValue : '' }}" x-bind:required="choice === '{{ $otherOptionValue }}'" x-bind:disabled="choice !== '{{ $otherOptionValue }}'" x-ref="otherInput">
+                                    <p class="text-xs text-body-text">Not in the list? Type it here and it will be recorded as a new {{ strtolower($label) }}.</p>
+                                </div>
                             @endif
-                        </label>
+                        </div>
                     @endforeach
 
                     <div class="sm:col-span-2">

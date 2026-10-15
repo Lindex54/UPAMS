@@ -54,6 +54,11 @@ class Payment extends Model
         return $this->belongsTo(User::class, 'reversed_by');
     }
 
+    public function wasRecordedBy(User $user): bool
+    {
+        return $this->created_by !== null && (int) $this->created_by === (int) $user->getKey();
+    }
+
     public function scopeValid(Builder $query): Builder
     {
         return $query->where('status', self::STATUS_RECORDED);

@@ -12,6 +12,7 @@ use App\Support\CsvExporter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class PaymentController extends Controller
@@ -29,7 +30,9 @@ class PaymentController extends Controller
 
     public function create(Request $request): View
     {
-        return view('admin.payments.form', ['invoices' => Invoice::query()->with('beneficiary')->whereNotIn('status', ['Paid', 'Cancelled', 'Archived'])->orderByDesc('issue_date')->get(), 'selectedInvoice' => $request->integer('invoice_id')]);
+        Gate::authorize('create', Payment::class);
+
+        return view('admin.payments.form', ['invoices' => Invoice::query()->with('beneficiary')->whereNotIn('status', ['Draft', 'Paid', 'Cancelled', 'Archived'])->orderByDesc('issue_date')->get(), 'selectedInvoice' => $request->integer('invoice_id')]);
     }
 
     public function store(StorePaymentRequest $request): RedirectResponse

@@ -28,7 +28,17 @@ class TechnicianWorkspaceTest extends TestCase
         $otherAsset = $this->ictAsset(Campus::factory()->create(), $unit, $type, ['serial_number' => 'SN-OTHER-001']);
 
         $this->actingAs($technician)->get(route('technician.dashboard'))
-            ->assertOk()->assertViewHas('metrics', fn (array $metrics): bool => $metrics['total'] === 1)->assertSee('IT Technician navigation');
+            ->assertOk()
+            ->assertViewHas('metrics', fn (array $metrics): bool => $metrics['total'] === 1)
+            ->assertSee('IT Technician navigation')
+            ->assertSee('Total ICT Equipment')
+            ->assertSee('Operational Equipment')
+            ->assertSee('Faulty Equipment')
+            ->assertSee('Under Maintenance')
+            ->assertDontSee('Unassigned Equipment')
+            ->assertDontSee('Warranties Expiring Soon')
+            ->assertSee('dark:bg-blue-950/80', escape: false)
+            ->assertSee('dark:bg-red-950/75', escape: false);
         $this->actingAs($technician)->get(route('technician.equipment.index', ['search' => 'SN-OWN']))
             ->assertOk()->assertSee($ownAsset->serial_number)->assertDontSee($otherAsset->serial_number);
         $this->actingAs($technician)->get(route('technician.equipment.show', $otherAsset))->assertNotFound();

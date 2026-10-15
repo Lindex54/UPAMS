@@ -148,13 +148,15 @@
                                         @click="sidebarOpen = false"
                                     >
                                         <span
+                                            x-show="sidebarCollapsed && ! sidebarOpen"
+                                            x-cloak
                                             @class([
-                                                'size-2 shrink-0 rounded-sm transition',
-                                                'bg-busitema-gold' => $isActive,
-                                                'bg-white/55 group-hover:bg-white' => ! $isActive,
+                                                'w-full text-center text-xs font-bold tracking-wide transition',
+                                                'text-busitema-blue dark:text-sky-300' => $isActive,
+                                                'text-white/70 group-hover:text-white' => ! $isActive,
                                             ])
                                             aria-hidden="true"
-                                        ></span>
+                                        >{{ str($item['label'])->replace(['&', '/', '-'], ' ')->squish()->explode(' ')->take(2)->map(fn (string $word): string => mb_strtoupper(mb_substr($word, 0, 1)))->implode('') }}</span>
                                         <span x-show="! sidebarCollapsed || sidebarOpen" x-transition.opacity>
                                             {{ $item['label'] }}
                                         </span>

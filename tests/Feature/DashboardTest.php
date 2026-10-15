@@ -19,6 +19,17 @@ class DashboardTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    public function test_every_role_dashboard_uses_the_shared_colored_metric_cards(): void
+    {
+        $user = User::factory()->make();
+
+        foreach (['dashboard', 'estates.dashboard', 'management.dashboard', 'campus.dashboard', 'finance.dashboard'] as $routeName) {
+            $this->actingAs($user)->get(route($routeName))
+                ->assertSee('dark:bg-blue-950/80', escape: false)
+                ->assertSee('dark:bg-red-950/75', escape: false);
+        }
+    }
+
     public function test_authenticated_user_sees_the_complete_dashboard_sidebar(): void
     {
         $user = User::factory()->make();

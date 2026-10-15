@@ -19,18 +19,9 @@
     </div>
 
     <section class="mt-6 grid gap-4 sm:grid-cols-3" aria-label="Notification summary">
-        <article class="rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-slate-900">
-            <p class="text-xs font-semibold tracking-wide text-body-text uppercase">Available templates</p>
-            <p class="mt-2 text-3xl font-bold text-heading">{{ $templates->count() }}</p>
-        </article>
-        <article class="rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-slate-900">
-            <p class="text-xs font-semibold tracking-wide text-body-text uppercase">Notification history</p>
-            <p class="mt-2 text-3xl font-bold text-heading">{{ $notificationCount }}</p>
-        </article>
-        <article class="rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-slate-900">
-            <p class="text-xs font-semibold tracking-wide text-body-text uppercase">Failed deliveries</p>
-            <p class="mt-2 text-3xl font-bold {{ $failedCount > 0 ? 'text-red-600 dark:text-red-400' : 'text-heading' }}">{{ $failedCount }}</p>
-        </article>
+        <x-stat-card label="Available Templates" :value="number_format($templates->count())" detail="Active reusable messages" tone="blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3h8l4 4v14H7V3Zm8 0v5h4M10 13h6M10 17h6" /></svg></x-stat-card>
+        <x-stat-card label="Notification History" :value="number_format($notificationCount)" detail="Messages recorded in the system" tone="purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg></x-stat-card>
+        <x-stat-card label="Failed Deliveries" :value="number_format($failedCount)" detail="Messages requiring attention" tone="red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 2.5 20h19L12 3Zm0 6v5M12 17.5h.01" /></svg></x-stat-card>
     </section>
 
     <section class="mt-6 rounded-2xl border border-border bg-white p-5 shadow-sm dark:bg-slate-900 sm:p-6">

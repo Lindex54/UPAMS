@@ -14,10 +14,10 @@
         <div class="flex flex-wrap gap-2"><a href="{{ route('technician.faults.create') }}" class="rounded-lg border border-white/30 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10">Record fault</a><a href="{{ route('technician.equipment.create') }}" class="rounded-lg bg-busitema-gold px-4 py-2.5 text-sm font-semibold text-busitema-navy hover:bg-yellow-300">Register equipment</a></div>
     </section>
 
-    @php $cards = [['Total ICT Equipment','total','bg-blue-500'],['Operational Equipment','operational','bg-emerald-500'],['Faulty Equipment','faulty','bg-red-500'],['Under Maintenance','maintenance','bg-orange-500'],['Unassigned Equipment','unassigned','bg-violet-500'],['Warranties Expiring Soon','warranties','bg-amber-500']]; @endphp
-    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+    @php $cards = [['Total ICT Equipment','total','blue'],['Operational Equipment','operational','green'],['Faulty Equipment','faulty','red'],['Under Maintenance','maintenance','orange']]; @endphp
+    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         @foreach ($cards as [$label,$key,$tone])
-            <article class="rounded-xl border border-border bg-white p-5 shadow-sm"><div class="flex items-start justify-between"><p class="text-sm font-semibold text-body-text">{{ $label }}</p><span class="size-2.5 rounded-full {{ $tone }}"></span></div><p class="mt-4 text-3xl font-semibold text-heading">{{ number_format($metrics[$key]) }}</p><p class="mt-2 text-xs text-body-text">Current authorised scope</p></article>
+            <x-stat-card :label="$label" :value="number_format($metrics[$key])" detail="Current authorised scope" :tone="$tone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 20V10m7 10V4m7 16v-7" /></svg></x-stat-card>
         @endforeach
     </section>
 

@@ -26,6 +26,16 @@ class FinanceGovernanceModulesTest extends TestCase
         }
     }
 
+    public function test_finance_and_governance_summaries_use_the_shared_colored_metric_cards(): void
+    {
+        $administrator = User::factory()->create();
+
+        foreach (['billing.index', 'arrears.index', 'utilities.index', 'notifications.index', 'reports.index'] as $routeName) {
+            $this->actingAs($administrator)->get(route($routeName))
+                ->assertSee('relative isolate', escape: false);
+        }
+    }
+
     public function test_payment_updates_invoice_balance_and_can_be_reversed(): void
     {
         $administrator = User::factory()->create();
@@ -35,7 +45,7 @@ class FinanceGovernanceModulesTest extends TestCase
         $payment = $service->recordPayment(['invoice_id' => $invoice->id, 'paid_at' => now(), 'amount' => 40000, 'payment_method' => 'Cash'], $administrator);
 
         $this->assertSame(60000.0, $invoice->refresh()->balance());
-        $service->reversePayment($payment, 'Cash entry was allocated to the wrong invoice.', $administrator);
+        $service->reversePayment($payment, 'Cash entry was allocated to the wrong invoice.', User::factory()->create());
         $this->assertSame(100000.0, $invoice->refresh()->balance());
         $this->assertDatabaseHas('payments', ['id' => $payment->id, 'status' => 'Reversed']);
     }

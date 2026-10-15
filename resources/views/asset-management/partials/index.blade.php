@@ -18,10 +18,7 @@
 
     <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="{{ $design['title'] }} summary">
         @foreach ($design['summary'] as [$label, $value])
-            <article class="rounded-xl border border-border bg-white p-5 shadow-sm">
-                <p class="text-sm font-medium text-body-text">{{ $label }}</p>
-                <p class="mt-2 text-2xl font-semibold tracking-tight text-heading">{{ $value }}</p>
-            </article>
+            <x-stat-card :label="$label" :value="$value" detail="Current portfolio summary" :tone="['blue', 'green', 'orange', 'red'][$loop->index]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7.5 12 3l8 4.5M5 9v9l7 3 7-3V9M12 12v9" /></svg></x-stat-card>
         @endforeach
     </section>
 

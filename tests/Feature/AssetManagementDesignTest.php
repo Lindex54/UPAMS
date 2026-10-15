@@ -15,6 +15,17 @@ class AssetManagementDesignTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
+    public function test_asset_register_summary_uses_the_shared_colored_metric_cards(): void
+    {
+        $user = User::factory()->make(['is_active' => true]);
+
+        $response = $this->actingAs($user)->get(route('asset-management.assets.index'));
+
+        $response
+            ->assertSee('dark:bg-blue-950/80', escape: false)
+            ->assertSee('dark:bg-red-950/75', escape: false);
+    }
+
     public function test_asset_form_marks_identifiers_assignment_and_cost_as_optional_and_accepts_an_image(): void
     {
         $user = User::factory()->make(['is_active' => true]);
@@ -124,7 +135,7 @@ class AssetManagementDesignTest extends TestCase
         ];
         $pages = [
             'index' => [[], ['Search and filters', 'Audit / Provenance', 'Date Added']],
-            'create' => [[], ['Record Information', 'GPS Latitude', 'GPS Longitude', 'No data will be saved', 'Save as draft']],
+            'create' => [[], ['Record Information', 'GPS Latitude', 'GPS Longitude', 'No data will be saved', 'Save as draft', 'Other (specify)']],
             'show' => [['record' => 'PREVIEW-001'], ['Added By', 'Last Updated Date', 'GPS Latitude', 'GPS Longitude', 'Record History']],
             'edit' => [['record' => 'PREVIEW-001'], ['GPS Latitude', 'GPS Longitude', 'Save changes', 'No data will be saved']],
         ];

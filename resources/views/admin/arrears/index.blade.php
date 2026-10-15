@@ -9,10 +9,7 @@
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         @foreach ($buckets as $bucket => $amount)
-            <div class="rounded-2xl border border-border bg-white p-5 shadow-sm dark:bg-slate-900">
-                <p class="text-xs font-semibold tracking-wider text-body-text uppercase">{{ $bucket }}</p>
-                <p class="mt-2 text-xl font-bold text-heading">UGX {{ number_format($amount, 2) }}</p>
-            </div>
+            <x-stat-card :label="$bucket" :value="'UGX '.number_format($amount, 2)" detail="Outstanding aging balance" :tone="['blue', 'gold', 'orange', 'red'][$loop->index]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M16 7.5c0-1.4-1.8-2.5-4-2.5S8 6.1 8 7.5 9.8 10 12 10s4 1.1 4 2.5S14.2 15 12 15s-4-1.1-4-2.5" /></svg></x-stat-card>
         @endforeach
     </div>
 

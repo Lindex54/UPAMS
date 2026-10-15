@@ -24,11 +24,11 @@ class PaymentPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Determine whether the user can record payments.
      */
     public function create(User $user): bool
     {
-        return $user->is_active;
+        return $user->managesFinance();
     }
 
     /**
@@ -36,7 +36,17 @@ class PaymentPolicy
      */
     public function update(User $user, Payment $payment): bool
     {
-        return $user->is_active;
+        return false;
+    }
+
+    /**
+     * Determine whether the user can reverse the payment; the recorder may never reverse their own entry.
+     */
+    public function reverse(User $user, Payment $payment): bool
+    {
+        return $user->managesFinance()
+            && $payment->status === Payment::STATUS_RECORDED
+            && ! $payment->wasRecordedBy($user);
     }
 
     /**

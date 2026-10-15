@@ -18,6 +18,17 @@ class OperationsDesignTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
+    public function test_operations_register_summary_uses_the_shared_colored_metric_cards(): void
+    {
+        $user = User::factory()->make(['is_active' => true]);
+
+        $response = $this->actingAs($user)->get(route('operations.agreements.index'));
+
+        $response
+            ->assertSee('dark:bg-blue-950/80', escape: false)
+            ->assertSee('dark:bg-red-950/75', escape: false);
+    }
+
     /**
      * @param  array<string, string>  $parameters
      * @param  array<int, string>  $expectedContent

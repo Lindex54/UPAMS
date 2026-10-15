@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Invoice;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,11 @@ class StoreInvoiceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return (bool) $this->user()?->is_active;
+        $invoice = $this->route('invoice');
+
+        return $invoice instanceof Invoice
+            ? (bool) $this->user()?->can('update', $invoice)
+            : (bool) $this->user()?->can('create', Invoice::class);
     }
 
     /**
@@ -22,7 +27,7 @@ class StoreInvoiceRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'beneficiary_id' => ['required', 'integer', 'exists:beneficiaries,id'],
             'campus_id' => ['required', 'integer', 'exists:campuses,id'],
             'property_reference' => ['nullable', 'string', 'max:255'],
@@ -34,6 +39,33 @@ class StoreInvoiceRequest extends FormRequest
             'subtotal' => ['required', 'numeric', 'min:0.01', 'max:999999999999.99'],
             'tax_amount' => ['nullable', 'numeric', 'min:0', 'max:999999999999.99'],
             'status' => ['required', 'in:Draft,Issued'],
+        ];
+
+        $invoice = $this->route('invoice');
+
+        if (! $invoice instanceof Invoice || ! $invoice->hasLockedFinancialTerms()) {
+            return $rules;
+        }
+
+        // Once issued, the financial terms are frozen; only descriptive fields may be corrected.
+        foreach (array_keys($rules) as $field) {
+            if (! in_array($field, Invoice::EDITABLE_AFTER_ISSUE, true)) {
+                $rules[$field] = ['prohibited'];
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            '*.prohibited' => 'This field is locked because the invoice has already been issued.',
         ];
     }
 }

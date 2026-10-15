@@ -12,6 +12,7 @@ use App\Support\CsvExporter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class InvoiceController extends Controller
@@ -32,11 +33,15 @@ class InvoiceController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('create', Invoice::class);
+
         return $this->formView(new Invoice);
     }
 
     public function edit(Invoice $invoice): View
     {
+        Gate::authorize('update', $invoice);
+
         return $this->formView($invoice);
     }
 
@@ -51,7 +56,7 @@ class InvoiceController extends Controller
     {
         $invoice = $this->billing->saveInvoice($request->validated(), $request->user(), $invoice);
 
-        return redirect()->route('billing.show', $invoice)->with('success', 'Invoice corrected successfully.');
+        return redirect()->route('billing.show', $invoice)->with('success', $invoice->isDraft() ? 'Draft invoice updated successfully.' : 'Invoice details updated successfully.');
     }
 
     public function show(Invoice $invoice): View
@@ -61,8 +66,10 @@ class InvoiceController extends Controller
 
     public function archive(Request $request, Invoice $invoice): RedirectResponse
     {
+        Gate::authorize('close', $invoice);
+
         $data = $request->validate(['status' => ['required', 'in:Archived,Cancelled'], 'reason' => ['required', 'string', 'min:10', 'max:2000']]);
-        $invoice->update(['status' => $data['status'], 'cancellation_reason' => $data['reason'], 'cancelled_at' => now(), 'updated_by' => $request->user()->id]);
+        $this->billing->closeInvoice($invoice, $data['status'], $data['reason'], $request->user());
 
         return back()->with('success', "Invoice {$data['status']} successfully.");
     }

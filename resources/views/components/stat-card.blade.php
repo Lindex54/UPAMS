@@ -8,7 +8,7 @@
 @php
     $tones = [
         'blue' => [
-            'card' => 'bg-blue-50 border-blue-200 dark:border-blue-500/30',
+            'card' => 'bg-blue-50 border-blue-200 dark:border-blue-400/35 dark:bg-blue-950/80',
             'orb' => 'bg-busitema-blue/10',
             'icon' => 'bg-busitema-blue text-white',
             'label' => 'text-blue-900/80 dark:text-blue-200',
@@ -17,7 +17,7 @@
             'dot' => 'bg-busitema-blue',
         ],
         'gold' => [
-            'card' => 'bg-amber-50 border-amber-200 dark:border-amber-500/30',
+            'card' => 'bg-amber-50 border-amber-200 dark:border-amber-400/35 dark:bg-amber-950/75',
             'orb' => 'bg-amber-400/15',
             'icon' => 'bg-busitema-gold text-amber-950',
             'label' => 'text-amber-900/80 dark:text-amber-200',
@@ -26,7 +26,7 @@
             'dot' => 'bg-amber-500',
         ],
         'green' => [
-            'card' => 'bg-emerald-50 border-emerald-200 dark:border-emerald-500/30',
+            'card' => 'bg-emerald-50 border-emerald-200 dark:border-emerald-400/35 dark:bg-emerald-950/75',
             'orb' => 'bg-emerald-500/10',
             'icon' => 'bg-emerald-600 text-white',
             'label' => 'text-emerald-900/80 dark:text-emerald-200',
@@ -35,7 +35,7 @@
             'dot' => 'bg-emerald-500',
         ],
         'orange' => [
-            'card' => 'bg-orange-50 border-orange-200 dark:border-orange-500/30',
+            'card' => 'bg-orange-50 border-orange-200 dark:border-orange-400/35 dark:bg-orange-950/75',
             'orb' => 'bg-orange-500/10',
             'icon' => 'bg-orange-500 text-white',
             'label' => 'text-orange-900/80 dark:text-orange-200',
@@ -44,7 +44,7 @@
             'dot' => 'bg-orange-500',
         ],
         'red' => [
-            'card' => 'bg-red-50 border-red-200 dark:border-red-500/30',
+            'card' => 'bg-red-50 border-red-200 dark:border-red-400/35 dark:bg-red-950/75',
             'orb' => 'bg-red-500/10',
             'icon' => 'bg-red-600 text-white',
             'label' => 'text-red-900/80 dark:text-red-200',
@@ -53,7 +53,7 @@
             'dot' => 'bg-red-500',
         ],
         'purple' => [
-            'card' => 'bg-violet-50 border-violet-200 dark:border-violet-500/30',
+            'card' => 'bg-violet-50 border-violet-200 dark:border-violet-400/35 dark:bg-violet-950/80',
             'orb' => 'bg-violet-500/10',
             'icon' => 'bg-violet-600 text-white',
             'label' => 'text-violet-900/80 dark:text-violet-200',
