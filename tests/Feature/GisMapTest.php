@@ -43,7 +43,9 @@ class GisMapTest extends TestCase
         $this->assertSame('campuses', $campusFeature['layer']);
         $this->assertSame('ARP', $campusFeature['badge']);
         $this->assertSame('Faculty of Agriculture', $campusFeature['subtitle']);
-        $this->assertContains(['Assets', '2'], $campusFeature['details']);
+        $this->assertContains(['Assets', '2'], $campusFeature['stats']);
+        $this->assertContains(['Campus code', 'ARP'], $campusFeature['details']);
+        $this->assertStringStartsWith('https://www.google.com/maps/dir/', $campusFeature['directions_url']);
         $this->assertSame(route('campuses.show', $campus), $campusFeature['url']);
         $this->assertSame(['campuses' => 1, 'assets' => 2], array_map(fn (array $layer): int => $layer['count'], $service->layers($features)));
     }

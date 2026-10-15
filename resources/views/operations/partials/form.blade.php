@@ -81,7 +81,9 @@
         </section>
 
         @if ($isPersistentBeneficiary)
+            @include('operations.partials.beneficiary-business-fields')
             @include('operations.partials.beneficiary-location-fields')
+            @include('operations.partials.beneficiary-document-fields')
         @endif
 
         <section class="rounded-xl border border-border bg-white p-6 shadow-sm sm:p-8">

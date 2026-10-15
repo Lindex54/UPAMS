@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\BeneficiaryController;
+use App\Http\Controllers\BeneficiaryDocumentController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ArrearsController;
@@ -145,6 +146,7 @@ Route::middleware('auth')->group(function (): void {
         Route::post('/beneficiaries', [BeneficiaryController::class, 'store'])->name('operations.beneficiaries.store');
         Route::get('/beneficiaries/{record}/edit', [BeneficiaryController::class, 'edit'])->name('operations.beneficiaries.edit');
         Route::put('/beneficiaries/{beneficiary}', [BeneficiaryController::class, 'update'])->name('operations.beneficiaries.update');
+        Route::get('/beneficiaries/{beneficiary}/documents/{document}', [BeneficiaryDocumentController::class, 'show'])->scopeBindings()->name('operations.beneficiaries.documents.show');
         Route::view('/beneficiaries/{record}', 'operations.page', [
             'module' => 'beneficiaries',
             'page' => 'show',

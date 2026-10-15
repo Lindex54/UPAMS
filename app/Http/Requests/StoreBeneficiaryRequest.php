@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Beneficiary;
+use App\Models\BeneficiaryDocument;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -25,6 +26,7 @@ class StoreBeneficiaryRequest extends FormRequest
     public function rules(): array
     {
         $beneficiary = $this->route('beneficiary');
+        $documentFile = ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:10240'];
 
         return [
             'full_name_organization' => ['required', 'string', 'max:255'],
@@ -44,6 +46,20 @@ class StoreBeneficiaryRequest extends FormRequest
             'national_id_sex' => ['nullable', Rule::in(['Male', 'Female'])],
             'nationality' => ['nullable', 'string', 'max:100'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'company_name' => ['nullable', 'string', 'max:255'],
+            'registration_number' => ['nullable', 'string', 'max:100'],
+            'tin' => ['nullable', 'string', 'max:30'],
+            'tax_returns' => ['nullable', 'string', 'max:255'],
+            'director_names' => ['nullable', 'string', 'max:2000'],
+            'owner_names' => ['nullable', 'string', 'max:2000'],
+            'local_council_permit' => ['nullable', 'string', 'max:255'],
+            'documents' => ['nullable', 'array:'.implode(',', array_keys(BeneficiaryDocument::STANDARD_TYPES))],
+            ...collect(BeneficiaryDocument::STANDARD_TYPES)->keys()->mapWithKeys(fn (string $type): array => ["documents.{$type}" => $documentFile])->all(),
+            'other_documents' => ['nullable', 'array', 'max:20'],
+            'other_documents.*.name' => ['nullable', 'string', 'max:150', 'required_with:other_documents.*.file'],
+            'other_documents.*.file' => [...$documentFile, 'required_with:other_documents.*.name'],
+            'remove_documents' => ['nullable', 'array'],
+            'remove_documents.*' => ['integer'],
             'district_id' => ['required', 'integer', Rule::exists('districts', 'id')->where('is_active', true)],
             'county_id' => ['required', 'integer', Rule::exists('counties', 'id')->where(fn ($query) => $query->where('district_id', $this->integer('district_id'))->where('is_active', true))],
             'sub_county_id' => ['required', 'integer', Rule::exists('sub_counties', 'id')->where(fn ($query) => $query->where('county_id', $this->integer('county_id'))->where('is_active', true))],
@@ -63,6 +79,15 @@ class StoreBeneficiaryRequest extends FormRequest
     }
 
     /** @return array<string, string> */
+    public function messages(): array
+    {
+        return [
+            'other_documents.*.name.required_with' => 'Give this document a name so it can be identified later.',
+            'other_documents.*.file.required_with' => 'Choose the file for this named document, or remove the row.',
+        ];
+    }
+
+    /** @return array<string, string> */
     public function attributes(): array
     {
         return [
@@ -76,6 +101,11 @@ class StoreBeneficiaryRequest extends FormRequest
             'national_id_given_names' => 'first name',
             'national_id_surname' => 'last name',
             'photo' => "person's photo",
+            'tin' => 'TIN',
+            'local_council_permit' => 'local council permit',
+            'other_documents.*.name' => 'document name',
+            'other_documents.*.file' => 'document file',
+            ...collect(BeneficiaryDocument::STANDARD_TYPES)->mapWithKeys(fn (string $label, string $type): array => ["documents.{$type}" => $label])->all(),
         ];
     }
 

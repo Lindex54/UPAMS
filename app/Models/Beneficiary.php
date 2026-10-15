@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'reference', 'full_name_organization', 'category', 'contact_person', 'telephone', 'email',
+    'company_name', 'registration_number', 'tin', 'tax_returns', 'director_names', 'owner_names', 'local_council_permit',
     'nin', 'nin_hash', 'national_id_given_names', 'national_id_surname',
     'national_id_sex', 'nationality', 'photo_path',
     'district_id', 'county_id', 'sub_county_id', 'parish_id', 'village_id',
@@ -52,6 +54,11 @@ class Beneficiary extends Model
     public function campus(): BelongsTo
     {
         return $this->belongsTo(Campus::class);
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(BeneficiaryDocument::class)->latest();
     }
 
     public function creator(): BelongsTo

@@ -11,6 +11,7 @@ use App\Models\District;
 use App\Models\Parish;
 use App\Models\SubCounty;
 use App\Models\Village;
+use App\Services\BeneficiaryDocumentService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
@@ -22,6 +23,13 @@ use Throwable;
 
 class BeneficiaryController extends Controller
 {
+    /**
+     * Form inputs handled by the document service rather than stored on the beneficiary row.
+     */
+    private const DOCUMENT_INPUTS = ['photo', 'documents', 'other_documents', 'remove_documents'];
+
+    public function __construct(private readonly BeneficiaryDocumentService $documents) {}
+
     public function create(): View
     {
         return view('operations.page', [
@@ -34,10 +42,10 @@ class BeneficiaryController extends Controller
 
     public function store(StoreBeneficiaryRequest $request): RedirectResponse
     {
-        $attributes = $request->validated();
-        unset($attributes['photo']);
+        $attributes = $request->safe()->except(self::DOCUMENT_INPUTS);
 
         $storedPhotoPath = $this->storePhoto($request->file('photo'));
+        $stagedDocuments = $this->stageDocuments($request);
 
         if ($storedPhotoPath !== null) {
             $attributes['photo_path'] = $storedPhotoPath;
@@ -47,19 +55,22 @@ class BeneficiaryController extends Controller
         $attributes['updated_by'] = $request->user()?->id;
 
         try {
-            $beneficiary = DB::transaction(function () use ($attributes): Beneficiary {
+            $beneficiary = DB::transaction(function () use ($attributes, $stagedDocuments, $request): Beneficiary {
                 $beneficiary = Beneficiary::create($attributes);
                 $beneficiary->update([
                     'reference' => 'BEN-'.str_pad((string) $beneficiary->id, 6, '0', STR_PAD_LEFT),
                 ]);
+                $this->documents->attach($beneficiary, $stagedDocuments, [], $request->user());
 
                 return $beneficiary;
             });
         } catch (Throwable $exception) {
-            // Avoid leaving an orphaned private file when the database transaction fails.
+            // Avoid leaving orphaned private files when the database transaction fails.
             if ($storedPhotoPath !== null) {
                 Storage::disk('local')->delete($storedPhotoPath);
             }
+
+            $this->documents->discard($stagedDocuments);
 
             throw $exception;
         }
@@ -72,7 +83,7 @@ class BeneficiaryController extends Controller
     public function edit(string $record): View
     {
         $beneficiary = Beneficiary::query()
-            ->with(['campus:id,name', 'creator:id,name', 'updater:id,name'])
+            ->with(['campus:id,name', 'creator:id,name', 'updater:id,name', 'documents'])
             ->where('reference', $record)
             ->when(ctype_digit($record), fn ($query) => $query->orWhereKey((int) $record))
             ->first();
@@ -88,8 +99,7 @@ class BeneficiaryController extends Controller
 
     public function update(UpdateBeneficiaryRequest $request, Beneficiary $beneficiary): RedirectResponse
     {
-        $attributes = $request->validated();
-        unset($attributes['photo']);
+        $attributes = $request->safe()->except(self::DOCUMENT_INPUTS);
 
         if (blank($attributes['nin'] ?? null)) {
             unset($attributes['nin'], $attributes['nin_hash']);
@@ -97,6 +107,7 @@ class BeneficiaryController extends Controller
 
         $previousPhotoPath = $beneficiary->photo_path;
         $storedPhotoPath = $this->storePhoto($request->file('photo'));
+        $stagedDocuments = $this->stageDocuments($request);
 
         if ($storedPhotoPath !== null) {
             $attributes['photo_path'] = $storedPhotoPath;
@@ -105,15 +116,23 @@ class BeneficiaryController extends Controller
         $attributes['updated_by'] = $request->user()?->id;
 
         try {
-            DB::transaction(fn (): bool => $beneficiary->update($attributes));
+            $obsoleteDocumentPaths = DB::transaction(function () use ($beneficiary, $attributes, $stagedDocuments, $request): array {
+                $beneficiary->update($attributes);
+
+                return $this->documents->attach($beneficiary, $stagedDocuments, $request->validated('remove_documents', []), $request->user());
+            });
         } catch (Throwable $exception) {
-            // Preserve the current photo and remove only the uncommitted replacement.
+            // Preserve the current files and remove only the uncommitted replacements.
             if ($storedPhotoPath !== null) {
                 Storage::disk('local')->delete($storedPhotoPath);
             }
 
+            $this->documents->discard($stagedDocuments);
+
             throw $exception;
         }
+
+        $this->documents->purge($obsoleteDocumentPaths);
 
         if ($storedPhotoPath !== null && $previousPhotoPath !== null) {
             Storage::disk('local')->delete($previousPhotoPath);
@@ -122,6 +141,22 @@ class BeneficiaryController extends Controller
         return redirect()
             ->route('operations.beneficiaries.edit', $beneficiary->reference)
             ->with('status', 'Beneficiary profile updated successfully.');
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function stageDocuments(StoreBeneficiaryRequest $request): array
+    {
+        return $this->documents->stage(
+            $request->file('documents', []),
+            collect($request->input('other_documents', []))
+                ->map(fn (array $document, int|string $index): array => [
+                    'name' => $document['name'] ?? null,
+                    'file' => $request->file("other_documents.{$index}.file"),
+                ])
+                ->all(),
+        );
     }
 
     /**

@@ -36,25 +36,49 @@
                         </template>
                     </select>
 
-                    <div class="flex flex-wrap gap-2" role="group" aria-label="Map layers">
-                        <template x-for="(layer, key) in layers" :key="key">
-                            <button class="inline-flex min-h-8 items-center gap-2 rounded-full border px-3 text-xs font-semibold transition" type="button" x-on:click="toggleLayer(key)" :aria-pressed="activeLayers.includes(key)" :class="activeLayers.includes(key) ? 'border-transparent bg-light-background text-heading' : 'border-border text-body-text opacity-60'">
-                                <span class="size-2.5 rounded-full" :style="`background-color: ${layer.color}`"></span>
-                                <span x-text="layer.label"></span>
+                    <div>
+                        <p class="mb-1.5 text-xs font-semibold text-body-text">Layers</p>
+                        <div class="grid grid-cols-3 gap-1 rounded-lg bg-light-background p-1" role="radiogroup" aria-label="Map layers">
+                            <button class="flex min-h-9 items-center justify-center gap-1 rounded-md px-1.5 text-xs font-semibold whitespace-nowrap transition focus-visible:outline-2 focus-visible:outline-busitema-blue" type="button" role="radio" x-on:click="setLayerFilter('all')" :aria-checked="layerFilter === 'all'" :class="layerFilter === 'all' ? 'bg-white text-heading shadow-sm dark:bg-slate-800' : 'text-body-text hover:text-heading'">
+                                All
+                                <span class="rounded bg-light-background px-1 py-0.5 text-[0.6875rem] tabular-nums" x-text="features.length"></span>
                             </button>
-                        </template>
+                            <template x-for="(layer, key) in layers" :key="key">
+                                <button class="flex min-h-9 items-center justify-center gap-1 rounded-md px-1.5 text-xs font-semibold whitespace-nowrap transition focus-visible:outline-2 focus-visible:outline-busitema-blue disabled:cursor-not-allowed disabled:opacity-50" type="button" role="radio" x-on:click="setLayerFilter(key)" :disabled="layerCount(key) === 0" :aria-checked="layerFilter === key" :title="layerCount(key) === 0 ? `No ${layer.label.toLowerCase()} have GPS coordinates yet` : `Show only ${layer.label.toLowerCase()}`" :class="layerFilter === key ? 'bg-white text-heading shadow-sm dark:bg-slate-800' : 'text-body-text hover:text-heading'">
+                                    <span class="size-2 shrink-0 rounded-full" :style="`background-color: ${layer.color}`"></span>
+                                    <span x-text="layer.label"></span>
+                                    <span class="rounded bg-light-background px-1 py-0.5 text-[0.6875rem] tabular-nums" x-text="layerCount(key)"></span>
+                                </button>
+                            </template>
+                        </div>
                     </div>
 
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="inline-flex rounded-lg border border-border p-0.5 text-xs font-semibold" role="group" aria-label="Base map">
-                            <button class="rounded-md px-2.5 py-1 transition" type="button" x-on:click="setBaseLayer('streets')" :class="baseLayer === 'streets' ? 'bg-busitema-blue text-white' : 'text-body-text'">Streets</button>
-                            <button class="rounded-md px-2.5 py-1 transition" type="button" x-on:click="setBaseLayer('satellite')" :class="baseLayer === 'satellite' ? 'bg-busitema-blue text-white' : 'text-body-text'">Satellite</button>
+                    <div>
+                        <p class="mb-1.5 flex items-center justify-between text-xs font-semibold text-body-text">
+                            Base map
+                            <span class="inline-flex items-center gap-1.5 font-normal" x-show="baseLayerLoading" x-cloak>
+                                <svg class="size-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.2-8.56" /></svg>
+                                Loading tiles
+                            </span>
+                        </p>
+                        <div class="grid grid-cols-2 gap-1 rounded-lg bg-light-background p-1" role="radiogroup" aria-label="Base map">
+                            @foreach (['streets' => 'Streets', 'satellite' => 'Satellite'] as $baseLayer => $baseLabel)
+                                <button class="flex min-h-9 items-center justify-center gap-2 rounded-md px-2 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-busitema-blue" type="button" role="radio" x-on:click="setBaseLayer('{{ $baseLayer }}')" :aria-checked="baseLayer === '{{ $baseLayer }}'" :class="baseLayer === '{{ $baseLayer }}' ? 'bg-white text-heading shadow-sm dark:bg-slate-800' : 'text-body-text hover:text-heading'">
+                                    @if ($baseLayer === 'streets')
+                                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15" /></svg>
+                                    @else
+                                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>
+                                    @endif
+                                    {{ $baseLabel }}
+                                </button>
+                            @endforeach
                         </div>
-                        <button class="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-semibold text-busitema-deep-blue transition hover:border-busitema-blue hover:text-busitema-blue" type="button" x-on:click="fitVisible()">
-                            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
-                            Show all
-                        </button>
                     </div>
+
+                    <button class="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border text-xs font-semibold text-busitema-deep-blue transition hover:border-busitema-blue hover:text-busitema-blue dark:text-sky-300" type="button" x-on:click="fitVisible()">
+                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+                        Show all on map
+                    </button>
                 </div>
 
                 <p class="px-4 pt-3 text-xs text-body-text" aria-live="polite"><span class="font-semibold text-heading" x-text="visibleFeatures.length"></span> of {{ number_format($features->count()) }} items shown</p>
@@ -62,7 +86,7 @@
                 <ul class="max-h-80 flex-1 overflow-y-auto p-2 lg:max-h-none">
                     <template x-for="feature in visibleFeatures" :key="feature.id">
                         <li>
-                            <button class="flex w-full items-start gap-3 rounded-lg p-2.5 text-left transition hover:bg-light-background" type="button" :id="`gis-item-${feature.id}`" x-on:click="focus(feature)" x-on:mouseenter="preview(feature)" x-on:mouseleave="clearPreview(feature)" :class="selectedId === feature.id && 'bg-light-background ring-1 ring-busitema-blue/30'">
+                            <button class="flex w-full items-start gap-3 rounded-lg p-2.5 text-left transition hover:bg-light-background" type="button" :id="`gis-item-${feature.id}`" x-on:click="focus(feature)" x-on:mouseenter="preview(feature)" x-on:mouseleave="clearPreview()" :class="selectedId === feature.id && 'bg-light-background ring-1 ring-busitema-blue/30'">
                                 <span class="mt-1 size-2.5 shrink-0 rounded-full" :style="`background-color: ${layers[feature.layer].color}`"></span>
                                 <span class="min-w-0 flex-1">
                                     <span class="block truncate text-sm font-semibold text-heading" x-text="feature.title"></span>

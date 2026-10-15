@@ -26,7 +26,7 @@ class GisFeatureService
     ];
 
     /**
-     * @return Collection<int, array{id: string, layer: string, title: string, subtitle: ?string, badge: ?string, status: ?string, campus: ?string, latitude: float, longitude: float, url: ?string, details: list<array{0: string, 1: string}>}>
+     * @return Collection<int, array{id: string, layer: string, title: string, subtitle: ?string, badge: ?string, status: ?string, campus: ?string, latitude: float, longitude: float, url: ?string, directions_url: string, stats: list<array{0: string, 1: string}>, details: list<array{0: string, 1: string}>}>
      */
     public function features(User $viewer): Collection
     {
@@ -54,7 +54,7 @@ class GisFeatureService
     {
         return Campus::query()
             ->with('district:id,name')
-            ->withCount(['assets', 'users'])
+            ->withCount(['assets', 'users', 'computerLabs'])
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->orderBy('name')
@@ -70,11 +70,17 @@ class GisFeatureService
                 'latitude' => (float) $campus->latitude,
                 'longitude' => (float) $campus->longitude,
                 'url' => route('campuses.show', $campus),
+                'directions_url' => $this->directionsUrl($campus->latitude, $campus->longitude),
+                'stats' => [
+                    ['Assets', number_format($campus->assets_count)],
+                    ['Users', number_format($campus->users_count)],
+                    ['Labs', number_format($campus->computer_labs_count)],
+                ],
                 'details' => $this->details([
+                    'Campus code' => $campus->code,
                     'District' => $campus->district?->name,
                     'Location' => $campus->location,
-                    'Assets' => number_format($campus->assets_count),
-                    'Users' => number_format($campus->users_count),
+                    'Faculty' => $campus->faculty,
                 ]),
             ]);
     }
@@ -103,13 +109,28 @@ class GisFeatureService
                 'latitude' => (float) $asset->latitude,
                 'longitude' => (float) $asset->longitude,
                 'url' => $asset->is_ict && $canOpenIctRecords ? route('technician.equipment.show', $asset) : null,
-                'details' => $this->details([
-                    'Campus' => $asset->campus?->name,
-                    'Location' => collect([$asset->building, $asset->room])->filter()->implode(' · '),
+                'directions_url' => $this->directionsUrl($asset->latitude, $asset->longitude),
+                'stats' => $this->details([
                     'Condition' => $asset->condition,
+                    'Acquired' => $asset->acquired_at?->format('M Y'),
+                    'Value' => $asset->purchase_cost !== null ? 'UGX '.number_format((float) $asset->purchase_cost) : null,
+                ]),
+                'details' => $this->details([
+                    'Asset ID' => $asset->reference,
+                    'Category' => $asset->category?->name,
+                    'Campus' => $asset->campus?->name,
+                    'Building / room' => collect([$asset->building, $asset->room])->filter()->implode(' · '),
+                    'Make / model' => collect([$asset->make, $asset->model])->filter()->implode(' '),
+                    'Serial number' => $asset->serial_number,
                     'Custodian' => $asset->custodian,
+                    'Warranty until' => $asset->warranty_expires_at?->format('d M Y'),
                 ]),
             ]);
+    }
+
+    private function directionsUrl(mixed $latitude, mixed $longitude): string
+    {
+        return 'https://www.google.com/maps/dir/?api=1&destination='.(float) $latitude.','.(float) $longitude;
     }
 
     /**

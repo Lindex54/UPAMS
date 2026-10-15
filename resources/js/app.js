@@ -189,11 +189,12 @@ Alpine.data('gisExplorer', (configuration) => {
     return {
         features: configuration.features ?? [],
         layers: configuration.layers ?? {},
-        activeLayers: Object.keys(configuration.layers ?? {}),
+        layerFilter: 'all',
         search: '',
         campus: '',
         selectedId: null,
         baseLayer: 'streets',
+        baseLayerLoading: false,
         status: 'loading',
 
         get campuses() {
@@ -203,7 +204,7 @@ Alpine.data('gisExplorer', (configuration) => {
         get visibleFeatures() {
             const term = this.search.trim().toLowerCase();
 
-            return this.features.filter((feature) => this.activeLayers.includes(feature.layer)
+            return this.features.filter((feature) => (this.layerFilter === 'all' || feature.layer === this.layerFilter)
                 && (this.campus === '' || feature.campus === this.campus)
                 && (term === '' || [feature.title, feature.subtitle, feature.badge, feature.campus]
                     .some((value) => String(value ?? '').toLowerCase().includes(term))));
@@ -211,27 +212,50 @@ Alpine.data('gisExplorer', (configuration) => {
 
         async init() {
             try {
+                this.baseLayer = window.localStorage.getItem('upams-gis-base-layer') === 'satellite' ? 'satellite' : 'streets';
+            } catch (error) {
+                this.baseLayer = 'streets';
+            }
+
+            try {
                 const { createGisMap } = await import('./gis/map.js');
 
                 controller = createGisMap(this.$refs.map, {
-                    features: this.features,
-                    layers: this.layers,
+                    features: JSON.parse(JSON.stringify(this.features)),
+                    layers: JSON.parse(JSON.stringify(this.layers)),
+                    baseLayer: this.baseLayer,
+                    onBaseLayerLoading: (isLoading) => {
+                        this.baseLayerLoading = isLoading;
+                    },
                     onSelect: (id) => {
                         this.selectedId = id;
                         this.$nextTick(() => document.getElementById(`gis-item-${id}`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
                     },
                 });
                 this.status = 'ready';
-                this.$watch('visibleFeatures', (visible) => controller.show(new Set(visible.map((feature) => feature.id))));
+                // Filters push straight to the map so pins update in the same tick as the list.
+                this.$watch('search', () => this.syncMap());
+                this.$watch('campus', () => this.syncMap());
             } catch (error) {
                 this.status = 'failed';
             }
         },
 
-        toggleLayer(layer) {
-            this.activeLayers = this.activeLayers.includes(layer)
-                ? this.activeLayers.filter((active) => active !== layer)
-                : [...this.activeLayers, layer];
+        layerCount(layer) {
+            return this.features.filter((feature) => feature.layer === layer).length;
+        },
+
+        setLayerFilter(layer) {
+            if (layer === this.layerFilter || (layer !== 'all' && this.layerCount(layer) === 0)) {
+                return;
+            }
+
+            this.layerFilter = layer;
+            this.syncMap();
+        },
+
+        syncMap() {
+            controller?.show(new Set(this.visibleFeatures.map((feature) => feature.id)));
         },
 
         focus(feature) {
@@ -243,8 +267,8 @@ Alpine.data('gisExplorer', (configuration) => {
             controller?.preview(feature.id);
         },
 
-        clearPreview(feature) {
-            controller?.clearPreview(feature.id);
+        clearPreview() {
+            controller?.clearPreview();
         },
 
         fitVisible() {
@@ -252,8 +276,18 @@ Alpine.data('gisExplorer', (configuration) => {
         },
 
         setBaseLayer(name) {
+            if (name === this.baseLayer) {
+                return;
+            }
+
             this.baseLayer = name;
             controller?.setBaseLayer(name);
+
+            try {
+                window.localStorage.setItem('upams-gis-base-layer', name);
+            } catch (error) {
+                // Remembering the base map is a convenience; ignore blocked storage.
+            }
         },
     };
 });
