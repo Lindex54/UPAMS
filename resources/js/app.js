@@ -181,4 +181,81 @@ Alpine.data('gpsLocationPreview', (configuration = {}) => ({
     },
 }));
 
+// Drive the GIS map page; Leaflet is loaded on demand so other pages stay light.
+Alpine.data('gisExplorer', (configuration) => {
+    // The Leaflet controller lives outside Alpine's reactive state; proxies break Leaflet internals.
+    let controller = null;
+
+    return {
+        features: configuration.features ?? [],
+        layers: configuration.layers ?? {},
+        activeLayers: Object.keys(configuration.layers ?? {}),
+        search: '',
+        campus: '',
+        selectedId: null,
+        baseLayer: 'streets',
+        status: 'loading',
+
+        get campuses() {
+            return [...new Set(this.features.map((feature) => feature.campus).filter(Boolean))].sort();
+        },
+
+        get visibleFeatures() {
+            const term = this.search.trim().toLowerCase();
+
+            return this.features.filter((feature) => this.activeLayers.includes(feature.layer)
+                && (this.campus === '' || feature.campus === this.campus)
+                && (term === '' || [feature.title, feature.subtitle, feature.badge, feature.campus]
+                    .some((value) => String(value ?? '').toLowerCase().includes(term))));
+        },
+
+        async init() {
+            try {
+                const { createGisMap } = await import('./gis/map.js');
+
+                controller = createGisMap(this.$refs.map, {
+                    features: this.features,
+                    layers: this.layers,
+                    onSelect: (id) => {
+                        this.selectedId = id;
+                        this.$nextTick(() => document.getElementById(`gis-item-${id}`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+                    },
+                });
+                this.status = 'ready';
+                this.$watch('visibleFeatures', (visible) => controller.show(new Set(visible.map((feature) => feature.id))));
+            } catch (error) {
+                this.status = 'failed';
+            }
+        },
+
+        toggleLayer(layer) {
+            this.activeLayers = this.activeLayers.includes(layer)
+                ? this.activeLayers.filter((active) => active !== layer)
+                : [...this.activeLayers, layer];
+        },
+
+        focus(feature) {
+            this.selectedId = feature.id;
+            controller?.focus(feature.id);
+        },
+
+        preview(feature) {
+            controller?.preview(feature.id);
+        },
+
+        clearPreview(feature) {
+            controller?.clearPreview(feature.id);
+        },
+
+        fitVisible() {
+            controller?.fitVisible();
+        },
+
+        setBaseLayer(name) {
+            this.baseLayer = name;
+            controller?.setBaseLayer(name);
+        },
+    };
+});
+
 Alpine.start();

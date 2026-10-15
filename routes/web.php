@@ -3,11 +3,13 @@
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\BeneficiaryController;
+use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ArrearsController;
 use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\Finance\UtilityController;
+use App\Http\Controllers\GisMapController;
 use App\Http\Controllers\Governance\ApprovalController;
 use App\Http\Controllers\Governance\AuditTrailController;
 use App\Http\Controllers\Governance\NotificationController;
@@ -57,6 +59,8 @@ Route::middleware('auth')->group(function (): void {
 
         Route::patch('/users/{user}/status', UserStatusController::class)->name('users.status.update');
         Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+        Route::resource('campuses', CampusController::class)->except(['destroy']);
+        Route::get('/gis-map', GisMapController::class)->name('gis.index');
 
         Route::get('/billing/export', [InvoiceController::class, 'export'])->name('billing.export');
         Route::patch('/billing/{invoice}/archive', [InvoiceController::class, 'archive'])->name('billing.archive');

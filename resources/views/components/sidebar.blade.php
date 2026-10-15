@@ -8,6 +8,7 @@
     $navigationGroups ??= [
         ['label' => 'Overview', 'items' => [
             ['label' => 'Dashboard', 'href' => route('dashboard'), 'pattern' => 'dashboard', 'route' => true],
+            ['label' => 'GIS Map', 'href' => route('gis.index'), 'pattern' => 'gis.*', 'route' => true],
         ]],
         ['label' => 'Asset Management', 'items' => [
             ['label' => 'Asset Registry', 'href' => url('/assets'), 'pattern' => 'assets*'],

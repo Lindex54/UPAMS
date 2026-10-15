@@ -19,6 +19,8 @@ class CampusFactory extends Factory
     {
         return [
             'name' => fake()->unique()->words(2, true).' Campus',
+            'code' => fake()->unique()->bothify('CMP-###'),
+            'status' => 'Active',
         ];
     }
 }
