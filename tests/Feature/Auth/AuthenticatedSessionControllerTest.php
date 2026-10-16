@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -94,6 +95,46 @@ class AuthenticatedSessionControllerTest extends TestCase
         $this->assertNotNull($user->fresh()->remember_token);
     }
 
+    public function test_it_technician_lands_on_the_ict_dashboard_after_login(): void
+    {
+        $technician = $this->technician();
+
+        $this->post(route('login.store'), ['email' => $technician->email, 'password' => 'correct-password'])
+            ->assertRedirect(route('technician.dashboard'));
+
+        $this->assertAuthenticatedAs($technician);
+    }
+
+    public function test_it_technician_is_not_sent_to_a_remembered_page_outside_the_ict_workspace(): void
+    {
+        $technician = $this->technician();
+
+        $this->get(route('operations.beneficiaries.create'))->assertRedirect(route('login'));
+
+        $this->post(route('login.store'), ['email' => $technician->email, 'password' => 'correct-password'])
+            ->assertRedirect(route('technician.dashboard'));
+    }
+
+    public function test_it_technician_keeps_a_remembered_page_inside_the_ict_workspace(): void
+    {
+        $technician = $this->technician();
+
+        $this->get(route('technician.faults.index'))->assertRedirect(route('login'));
+
+        $this->post(route('login.store'), ['email' => $technician->email, 'password' => 'correct-password'])
+            ->assertRedirect(route('technician.faults.index'));
+    }
+
+    public function test_other_roles_still_return_to_the_page_they_originally_requested(): void
+    {
+        $user = User::factory()->create(['password' => 'correct-password']);
+
+        $this->get(route('operations.beneficiaries.create'))->assertRedirect(route('login'));
+
+        $this->post(route('login.store'), ['email' => $user->email, 'password' => 'correct-password'])
+            ->assertRedirect(route('operations.beneficiaries.create'));
+    }
+
     public function test_authenticated_users_are_redirected_away_from_the_login_page(): void
     {
         $user = User::factory()->create();
@@ -142,5 +183,13 @@ class AuthenticatedSessionControllerTest extends TestCase
             'campus dashboard' => ['campus.dashboard'],
             'finance dashboard' => ['finance.dashboard'],
         ];
+    }
+
+    private function technician(): User
+    {
+        return User::factory()->create([
+            'password' => 'correct-password',
+            'role_id' => Role::query()->firstOrCreate(['name' => 'IT Technician'])->id,
+        ]);
     }
 }

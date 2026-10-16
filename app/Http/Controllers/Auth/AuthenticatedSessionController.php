@@ -25,7 +25,25 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $this->auditTrail->record('login', 'User signed in successfully.');
 
+        if ($request->user()?->role?->name === 'IT Technician') {
+            return $this->redirectTechnician($request);
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    /**
+     * IT Technicians may only use the ICT workspace, so a remembered page outside it would end in a 403.
+     */
+    private function redirectTechnician(LoginRequest $request): RedirectResponse
+    {
+        $intendedPath = parse_url((string) $request->session()->get('url.intended'), PHP_URL_PATH) ?? '';
+
+        if (! str_starts_with('/'.ltrim($intendedPath, '/'), '/technician/')) {
+            $request->session()->forget('url.intended');
+        }
+
+        return redirect()->intended(route('technician.dashboard', absolute: false));
     }
 
     public function destroy(Request $request): RedirectResponse
