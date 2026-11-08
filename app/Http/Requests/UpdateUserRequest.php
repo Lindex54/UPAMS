@@ -17,7 +17,8 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->is_active === true
+            && $this->user()?->role?->name === 'System Administrator';
     }
 
     /**

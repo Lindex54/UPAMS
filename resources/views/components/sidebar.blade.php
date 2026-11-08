@@ -5,6 +5,7 @@
 ])
 
 @php
+    $usesDefaultNavigation = $navigationGroups === null;
     $navigationGroups ??= [
         ['label' => 'Overview', 'items' => [
             ['label' => 'Dashboard', 'href' => route('dashboard'), 'pattern' => 'dashboard', 'route' => true],
@@ -47,6 +48,13 @@
             ['label' => 'System Settings', 'href' => url('/settings'), 'pattern' => 'settings*'],
         ]],
     ];
+
+    if ($usesDefaultNavigation && auth()->user()->role?->name !== 'System Administrator') {
+        $navigationGroups = collect($navigationGroups)
+            ->reject(fn (array $group): bool => $group['label'] === 'Administration')
+            ->values()
+            ->all();
+    }
 @endphp
 
 <div {{ $attributes->merge(['class' => 'contents']) }}>

@@ -25,6 +25,7 @@ use App\Http\Controllers\Technician\FaultController as TechnicianFaultController
 use App\Http\Controllers\Technician\WorkspaceController as TechnicianWorkspaceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserStatusController;
+use App\Http\Middleware\EnsureSystemAdministrator;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\RestrictItTechnicianWorkspace;
 use Illuminate\Support\Facades\Route;
@@ -60,9 +61,11 @@ Route::middleware('auth')->group(function (): void {
             Route::get('/activity/{type}/{record}', TechnicianActivityController::class)->whereIn('type', ['equipment', 'labs', 'faults', 'assignments', 'inspections', 'transfers', 'documents'])->whereNumber('record')->name('activity.show');
         });
 
-        Route::patch('/users/{user}/status', UserStatusController::class)->name('users.status.update');
-        Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
-        Route::resource('campuses', CampusController::class)->except(['destroy']);
+        Route::middleware(EnsureSystemAdministrator::class)->group(function (): void {
+            Route::patch('/users/{user}/status', UserStatusController::class)->name('users.status.update');
+            Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+            Route::resource('campuses', CampusController::class)->except(['destroy']);
+        });
         Route::get('/gis-map', GisMapController::class)->name('gis.index');
 
         Route::get('/billing/export', [InvoiceController::class, 'export'])->name('billing.export');

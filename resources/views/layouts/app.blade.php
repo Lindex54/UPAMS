@@ -24,8 +24,12 @@
         }"
         @keydown.escape.window="sidebarOpen = false"
     >
+        @php($isCampusPropertyOfficer = auth()->user()->role?->name === 'Campus Property Officer')
+
         @hasSection('sidebar')
             @yield('sidebar')
+        @elseif ($isCampusPropertyOfficer)
+            <x-campus-sidebar />
         @else
             <x-sidebar />
         @endif
@@ -36,7 +40,7 @@
         >
             <header class="flex min-h-20 items-center justify-between border-b border-border bg-white px-5 sm:px-8">
                 <div>
-                    <p class="text-xs font-semibold tracking-[0.14em] text-busitema-blue uppercase">@yield('portal-label', 'Property Management Administration')</p>
+                    <p class="text-xs font-semibold tracking-[0.14em] text-busitema-blue uppercase">@yield('portal-label', $isCampusPropertyOfficer ? ((auth()->user()->campus?->name ?? 'Campus').' Property Management') : 'Property Management Administration')</p>
                     <h1 class="mt-1 text-2xl font-semibold text-heading">@yield('page-heading', 'Dashboard')</h1>
                 </div>
 
@@ -46,7 +50,7 @@
                     <div class="hidden items-center gap-3 sm:flex">
                         <div class="text-right">
                             <p class="text-sm font-semibold text-heading">{{ auth()->user()->name }}</p>
-                            <p class="text-xs text-body-text">@yield('user-role', 'System Administrator')</p>
+                            <p class="text-xs text-body-text">@yield('user-role', auth()->user()->role?->name ?? 'User')</p>
                         </div>
                         <div class="flex size-10 items-center justify-center rounded-full bg-busitema-blue text-sm font-semibold text-white" aria-hidden="true">
                             {{ str(auth()->user()->name)->substr(0, 1)->upper() }}

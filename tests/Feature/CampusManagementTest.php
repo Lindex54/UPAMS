@@ -19,7 +19,7 @@ class CampusManagementTest extends TestCase
         $district = District::factory()->create(['name' => 'Tororo']);
         Campus::factory()->create(['name' => 'Nagongera Campus', 'code' => 'NAG', 'district_id' => $district->id, 'faculty' => 'Faculty of Science and Education']);
 
-        $this->actingAs($this->userWithRole('Finance Officer'))->get(route('campuses.index'))
+        $this->actingAs($this->userWithRole('System Administrator'))->get(route('campuses.index'))
             ->assertOk()
             ->assertSee('Nagongera Campus')
             ->assertSee('NAG')
@@ -107,7 +107,7 @@ class CampusManagementTest extends TestCase
         $this->actingAs($user)->get(route('campuses.create'))->assertForbidden();
         $this->actingAs($user)->post(route('campuses.store'), ['name' => 'Rogue Campus', 'code' => 'RGE', 'district_id' => District::factory()->create()->id, 'status' => 'Active'])->assertForbidden();
         $this->actingAs($user)->get(route('campuses.edit', $campus))->assertForbidden();
-        $this->actingAs($user)->get(route('campuses.show', $campus))->assertOk()->assertDontSee('Edit campus');
+        $this->actingAs($user)->get(route('campuses.show', $campus))->assertForbidden();
 
         $this->assertDatabaseMissing('campuses', ['name' => 'Rogue Campus']);
     }

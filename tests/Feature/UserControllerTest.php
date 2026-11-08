@@ -24,7 +24,7 @@ class UserControllerTest extends TestCase
 
     public function test_active_authenticated_user_can_view_user_accounts(): void
     {
-        $administrator = User::factory()->create([
+        $administrator = $this->systemAdministrator([
             'name' => 'System Administrator',
             'email' => 'admin@busitema.ac.ug',
         ]);
@@ -47,7 +47,7 @@ class UserControllerTest extends TestCase
 
     public function test_active_authenticated_user_can_open_the_create_user_form(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
         $campus = Campus::factory()->create(['name' => 'Main Campus']);
         $orgUnit = OrgUnit::factory()->create(['name' => 'Finance Office']);
         $role = Role::factory()->create(['name' => 'Finance Officer']);
@@ -74,7 +74,7 @@ class UserControllerTest extends TestCase
 
     public function test_user_can_be_created_with_a_hashed_initial_password(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
 
         $attributes = $this->validUserData([
             'first_name' => 'Godwin',
@@ -107,7 +107,7 @@ class UserControllerTest extends TestCase
 
     public function test_new_user_requires_a_unique_email_and_confirmed_initial_password(): void
     {
-        $administrator = User::factory()->create([
+        $administrator = $this->systemAdministrator([
             'email' => 'admin@busitema.ac.ug',
         ]);
 
@@ -124,7 +124,7 @@ class UserControllerTest extends TestCase
 
     public function test_new_user_requires_profile_and_scope_information(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
 
         $response = $this->actingAs($administrator)->post(route('users.store'), [
             'email' => 'new.user@busitema.ac.ug',
@@ -146,7 +146,7 @@ class UserControllerTest extends TestCase
 
     public function test_new_user_rejects_unknown_scope_and_role_values(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
 
         $response = $this->actingAs($administrator)->post(route('users.store'), $this->validUserData([
             'campus_id' => 999999,
@@ -162,7 +162,7 @@ class UserControllerTest extends TestCase
     #[DataProvider('invalidInitialPasswords')]
     public function test_initial_password_requires_mixed_case_letters_numbers_and_symbols(string $password): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
 
         $response = $this->actingAs($administrator)->post(route('users.store'), $this->validUserData([
             'email' => 'new.user@busitema.ac.ug',
@@ -177,7 +177,7 @@ class UserControllerTest extends TestCase
 
     public function test_basic_user_information_can_be_updated_without_changing_security_fields(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
         $user = User::factory()->create([
             'name' => 'Old Name',
             'email' => 'old@busitema.ac.ug',
@@ -215,7 +215,7 @@ class UserControllerTest extends TestCase
 
     public function test_user_update_rejects_another_accounts_email_address(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
         $existingUser = User::factory()->create(['email' => 'existing@busitema.ac.ug']);
         $user = User::factory()->create(['email' => 'original@busitema.ac.ug']);
 
@@ -230,7 +230,7 @@ class UserControllerTest extends TestCase
 
     public function test_user_account_can_be_deactivated(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
         $user = User::factory()->create(['remember_token' => 'original-token']);
 
         $response = $this->actingAs($administrator)->patch(route('users.status.update', $user), [
@@ -247,7 +247,7 @@ class UserControllerTest extends TestCase
 
     public function test_inactive_user_account_can_be_activated(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
         $user = User::factory()->inactive()->create();
 
         $response = $this->actingAs($administrator)->patch(route('users.status.update', $user), [
@@ -261,7 +261,7 @@ class UserControllerTest extends TestCase
 
     public function test_user_cannot_deactivate_their_own_account(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
 
         $response = $this->actingAs($administrator)->patch(route('users.status.update', $administrator), [
             'is_active' => false,
@@ -274,7 +274,7 @@ class UserControllerTest extends TestCase
 
     public function test_account_status_requires_a_boolean_value(): void
     {
-        $administrator = User::factory()->create();
+        $administrator = $this->systemAdministrator();
         $user = User::factory()->create();
 
         $response = $this->actingAs($administrator)->patch(route('users.status.update', $user), [
@@ -316,6 +316,19 @@ class UserControllerTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_campus_property_officer_cannot_access_user_or_campus_administration(): void
+    {
+        $campusOfficer = User::factory()->create([
+            'role_id' => Role::factory()->create(['name' => 'Campus Property Officer'])->id,
+            'campus_id' => Campus::factory()->create()->id,
+        ]);
+
+        $this->actingAs($campusOfficer)->get(route('users.index'))->assertForbidden();
+        $this->actingAs($campusOfficer)->get(route('users.create'))->assertForbidden();
+        $this->actingAs($campusOfficer)->get(route('campuses.index'))->assertForbidden();
+        $this->actingAs($campusOfficer)->post(route('users.store'), $this->validUserData())->assertForbidden();
+    }
+
     /**
      * @return array<string, array{string}>
      */
@@ -348,5 +361,14 @@ class UserControllerTest extends TestCase
             'password' => 'Valid26!',
             'password_confirmation' => 'Valid26!',
         ], $overrides);
+    }
+
+    /** @param array<string, mixed> $attributes */
+    private function systemAdministrator(array $attributes = []): User
+    {
+        return User::factory()->create([
+            'role_id' => Role::query()->firstOrCreate(['name' => 'System Administrator'])->id,
+            ...$attributes,
+        ]);
     }
 }
