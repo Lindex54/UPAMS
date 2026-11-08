@@ -16,7 +16,11 @@
 @endif
 
 @section('content')
-    <div class="flex flex-col gap-6" x-data="gisExplorer(@js(['features' => $features, 'layers' => $layers]))">
+    <div class="flex flex-col gap-6" x-data="gisExplorer(@js([
+        'features' => $features,
+        'layers' => $layers,
+        'baseLayerStorageKey' => request()->routeIs('campus.map') ? 'upams-campus-gis-base-layer' : 'upams-gis-base-layer',
+    ]))">
         <section class="rounded-xl border border-border bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>

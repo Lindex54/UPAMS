@@ -185,6 +185,7 @@ Alpine.data('gpsLocationPreview', (configuration = {}) => ({
 Alpine.data('gisExplorer', (configuration) => {
     // The Leaflet controller lives outside Alpine's reactive state; proxies break Leaflet internals.
     let controller = null;
+    const baseLayerStorageKey = configuration.baseLayerStorageKey ?? 'upams-gis-base-layer';
 
     return {
         features: configuration.features ?? [],
@@ -212,7 +213,7 @@ Alpine.data('gisExplorer', (configuration) => {
 
         async init() {
             try {
-                this.baseLayer = window.localStorage.getItem('upams-gis-base-layer') === 'satellite' ? 'satellite' : 'streets';
+                this.baseLayer = window.localStorage.getItem(baseLayerStorageKey) === 'satellite' ? 'satellite' : 'streets';
             } catch (error) {
                 this.baseLayer = 'streets';
             }
@@ -284,7 +285,7 @@ Alpine.data('gisExplorer', (configuration) => {
             controller?.setBaseLayer(name);
 
             try {
-                window.localStorage.setItem('upams-gis-base-layer', name);
+                window.localStorage.setItem(baseLayerStorageKey, name);
             } catch (error) {
                 // Remembering the base map is a convenience; ignore blocked storage.
             }
