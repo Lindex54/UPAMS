@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Asset;
 use App\Models\Campus;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -30,7 +31,7 @@ class GisFeatureService
      */
     public function features(User $viewer): Collection
     {
-        return $this->campusFeatures()
+        return $this->campusFeatures($viewer)
             ->concat($this->assetFeatures($viewer))
             ->values();
     }
@@ -50,39 +51,44 @@ class GisFeatureService
     /**
      * @return Collection<int, array<string, mixed>>
      */
-    private function campusFeatures(): Collection
+    private function campusFeatures(User $viewer): Collection
     {
         return Campus::query()
+            ->withoutGlobalScope('assigned_campus')
             ->with('district:id,name')
             ->withCount(['assets', 'users', 'computerLabs'])
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->orderBy('name')
             ->get()
-            ->map(fn (Campus $campus): array => [
-                'id' => "campus-{$campus->id}",
-                'layer' => 'campuses',
-                'title' => $campus->name,
-                'subtitle' => $campus->faculty,
-                'badge' => $campus->code,
-                'status' => $campus->status,
-                'campus' => $campus->name,
-                'latitude' => (float) $campus->latitude,
-                'longitude' => (float) $campus->longitude,
-                'url' => route('campuses.show', $campus),
-                'directions_url' => $this->directionsUrl($campus->latitude, $campus->longitude),
-                'stats' => [
-                    ['Assets', number_format($campus->assets_count)],
-                    ['Users', number_format($campus->users_count)],
-                    ['Labs', number_format($campus->computer_labs_count)],
-                ],
-                'details' => $this->details([
-                    'Campus code' => $campus->code,
-                    'District' => $campus->district?->name,
-                    'Location' => $campus->location,
-                    'Faculty' => $campus->faculty,
-                ]),
-            ]);
+            ->map(function (Campus $campus) use ($viewer): array {
+                $canSeeCampusProperties = ! $viewer->isCampusScoped() || $viewer->campus_id === $campus->id;
+
+                return [
+                    'id' => "campus-{$campus->id}",
+                    'layer' => 'campuses',
+                    'title' => $campus->name,
+                    'subtitle' => $campus->faculty,
+                    'badge' => $campus->code,
+                    'status' => $campus->status,
+                    'campus' => $campus->name,
+                    'latitude' => (float) $campus->latitude,
+                    'longitude' => (float) $campus->longitude,
+                    'url' => $canSeeCampusProperties ? route('campuses.show', $campus) : null,
+                    'directions_url' => $this->directionsUrl($campus->latitude, $campus->longitude),
+                    'stats' => $canSeeCampusProperties ? [
+                        ['Assets', number_format($campus->assets_count)],
+                        ['Users', number_format($campus->users_count)],
+                        ['Labs', number_format($campus->computer_labs_count)],
+                    ] : [],
+                    'details' => $this->details([
+                        'Campus code' => $campus->code,
+                        'District' => $campus->district?->name,
+                        'Location' => $campus->location,
+                        'Faculty' => $campus->faculty,
+                    ]),
+                ];
+            });
     }
 
     /**
@@ -94,6 +100,15 @@ class GisFeatureService
 
         return Asset::query()
             ->with(['campus:id,name', 'type:id,name', 'category:id,name'])
+            ->when($viewer->isCampusScoped(), function (Builder $query) use ($viewer): void {
+                if ($viewer->campus_id === null) {
+                    $query->whereRaw('1 = 0');
+
+                    return;
+                }
+
+                $query->where('campus_id', $viewer->campus_id);
+            })
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->orderBy('name')

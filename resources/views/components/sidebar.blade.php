@@ -44,7 +44,6 @@
             ['label' => 'Roles & Permissions', 'href' => url('/roles'), 'pattern' => 'roles*'],
             ['label' => 'Campuses', 'href' => url('/campuses'), 'pattern' => 'campuses*'],
             ['label' => 'Organizational Units', 'href' => url('/organizational-units'), 'pattern' => 'organizational-units*'],
-            ['label' => 'Asset Categories', 'href' => url('/asset-categories'), 'pattern' => 'asset-categories*'],
             ['label' => 'System Settings', 'href' => url('/settings'), 'pattern' => 'settings*'],
         ]],
     ];

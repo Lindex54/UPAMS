@@ -3,6 +3,18 @@
 @section('title', 'GIS Map | Property Management')
 @section('page-heading', 'GIS Map')
 
+@if (request()->routeIs('campus.map'))
+    @section('portal-label', 'Property Management · Campus')
+
+    @section('user-role')
+        {{ auth()->user()->role?->name ?? 'Campus Property Officer' }}
+    @endsection
+
+    @section('sidebar')
+        <x-campus-sidebar />
+    @endsection
+@endif
+
 @section('content')
     <div class="flex flex-col gap-6" x-data="gisExplorer(@js(['features' => $features, 'layers' => $layers]))">
         <section class="rounded-xl border border-border bg-white p-6 shadow-sm">

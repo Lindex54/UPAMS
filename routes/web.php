@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\BeneficiaryController;
 use App\Http\Controllers\BeneficiaryDocumentController;
+use App\Http\Controllers\Campus\DashboardController as CampusDashboardController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ArrearsController;
@@ -200,7 +201,8 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::view('/estates/dashboard', 'estates.dashboard')->name('estates.dashboard');
         Route::view('/management/dashboard', 'management.dashboard')->name('management.dashboard');
-        Route::view('/campus/dashboard', 'campus.dashboard')->name('campus.dashboard');
+        Route::get('/campus/dashboard', CampusDashboardController::class)->name('campus.dashboard');
+        Route::get('/campus/map', GisMapController::class)->name('campus.map');
         Route::view('/finance/dashboard', 'finance.dashboard')->name('finance.dashboard');
     });
 });

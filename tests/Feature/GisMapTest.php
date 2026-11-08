@@ -75,6 +75,46 @@ class GisMapTest extends TestCase
             ->assertSee(route('gis.index'));
     }
 
+    public function test_campus_map_shows_all_campuses_but_only_the_officers_assigned_campus_assets(): void
+    {
+        $assignedCampus = Campus::factory()->create([
+            'name' => 'Main Campus',
+            'latitude' => 0.545,
+            'longitude' => 34.025,
+        ]);
+        $otherCampus = Campus::factory()->create([
+            'name' => 'Nagongera Campus',
+            'latitude' => 0.77,
+            'longitude' => 34.0261,
+        ]);
+        Asset::factory()->create([
+            'name' => 'Main Campus Generator',
+            'campus_id' => $assignedCampus->id,
+            'latitude' => 0.546,
+            'longitude' => 34.026,
+        ]);
+        Asset::factory()->create([
+            'name' => 'Nagongera Private Generator',
+            'campus_id' => $otherCampus->id,
+            'latitude' => 0.771,
+            'longitude' => 34.027,
+        ]);
+        $user = User::factory()->create([
+            'campus_id' => $assignedCampus->id,
+            'role_id' => Role::query()->firstOrCreate(['name' => 'Campus Property Officer'])->id,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('campus.map'));
+
+        $response
+            ->assertOk()
+            ->assertSee('Campus Property Officer navigation')
+            ->assertSee('Main Campus')
+            ->assertSee('Nagongera Campus')
+            ->assertSee('Main Campus Generator')
+            ->assertDontSee('Nagongera Private Generator');
+    }
+
     public function test_guests_are_redirected_to_login(): void
     {
         $this->get(route('gis.index'))->assertRedirect(route('login'));

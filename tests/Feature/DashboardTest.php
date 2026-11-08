@@ -21,7 +21,8 @@ class DashboardTest extends TestCase
 
     public function test_every_role_dashboard_uses_the_shared_colored_metric_cards(): void
     {
-        $user = User::factory()->make();
+        $campus = Campus::factory()->create();
+        $user = User::factory()->create(['campus_id' => $campus->id]);
 
         foreach (['dashboard', 'estates.dashboard', 'management.dashboard', 'campus.dashboard', 'finance.dashboard'] as $routeName) {
             $this->actingAs($user)->get(route($routeName))
@@ -66,7 +67,6 @@ class DashboardTest extends TestCase
                 'Roles & Permissions',
                 'Campuses',
                 'Organizational Units',
-                'Asset Categories',
                 'System Settings',
             ])
             ->assertSee('aria-current="page"', escape: false)
@@ -190,13 +190,15 @@ class DashboardTest extends TestCase
 
     public function test_campus_dashboard_design_preview_displays_assigned_campus_operations(): void
     {
-        $user = User::factory()->make();
+        $campus = Campus::factory()->create(['name' => 'Main Campus']);
+        $user = User::factory()->create(['campus_id' => $campus->id]);
 
         $response = $this->actingAs($user)->get(route('campus.dashboard'));
 
         $response
             ->assertOk()
             ->assertSee('Campus Property Officer navigation')
+            ->assertSee(route('campus.map'))
             ->assertSee([
                 'Asset Registry',
                 'Land Management',
@@ -212,18 +214,18 @@ class DashboardTest extends TestCase
                 'Reports',
                 'Map/Location View',
                 'Total Campus Assets',
-                'Available Land',
-                'Vacant Spaces',
-                'Occupied Spaces',
+                'Active Assets',
+                'ICT Equipment',
+                'Current Documents',
                 'Assets Under Maintenance',
                 'Expiring Agreements',
                 'Open Maintenance Requests',
                 'Poor/Critical Condition Assets',
-                'Recent Asset Activity',
+                'Recent Campus Activity',
                 'Maintenance Status',
                 'Agreement Expiries',
                 'Asset Condition',
-                'Occupancy Overview',
+                'Campus Registry',
                 'Upcoming Document Expiries',
                 'Register Asset',
                 'Add Land Record',
@@ -241,6 +243,83 @@ class DashboardTest extends TestCase
                 'Arrears Overview',
                 'Approvals',
             ]);
+    }
+
+    public function test_campus_dashboard_uses_only_the_authenticated_users_campus_records(): void
+    {
+        $mainCampus = Campus::factory()->create(['name' => 'Main Campus']);
+        $otherCampus = Campus::factory()->create(['name' => 'Other Campus']);
+        $orgUnit = OrgUnit::factory()->create();
+        $category = AssetCategory::factory()->create();
+        $type = AssetType::factory()->create(['asset_category_id' => $category->id]);
+        $user = User::factory()->create(['campus_id' => $mainCampus->id, 'org_unit_id' => $orgUnit->id]);
+
+        $mainAsset = Asset::factory()->create([
+            'campus_id' => $mainCampus->id,
+            'org_unit_id' => $orgUnit->id,
+            'asset_category_id' => $category->id,
+            'asset_type_id' => $type->id,
+            'status' => 'Active',
+            'condition' => 'Poor',
+        ]);
+        Asset::factory()->create([
+            'campus_id' => $mainCampus->id,
+            'org_unit_id' => $orgUnit->id,
+            'asset_category_id' => $category->id,
+            'asset_type_id' => $type->id,
+            'status' => 'Under Maintenance',
+            'condition' => 'Good',
+        ]);
+        Asset::factory()->count(3)->create([
+            'campus_id' => $otherCampus->id,
+            'org_unit_id' => $orgUnit->id,
+            'asset_category_id' => $category->id,
+            'asset_type_id' => $type->id,
+        ]);
+
+        MaintenanceRequest::factory()->create([
+            'asset_id' => $mainAsset->id,
+            'campus_id' => $mainCampus->id,
+            'org_unit_id' => $orgUnit->id,
+            'status' => 'Reported',
+        ]);
+        Agreement::factory()->create([
+            'campus_id' => $mainCampus->id,
+            'org_unit_id' => $orgUnit->id,
+            'expires_at' => today()->addDays(20),
+        ]);
+        Agreement::factory()->create([
+            'campus_id' => $otherCampus->id,
+            'org_unit_id' => $orgUnit->id,
+            'expires_at' => today()->addDays(20),
+        ]);
+        Document::factory()->create([
+            'campus_id' => $mainCampus->id,
+            'org_unit_id' => $orgUnit->id,
+            'title' => 'Main Campus Safety Certificate',
+            'expires_at' => today()->addDays(40),
+        ]);
+        Document::factory()->create([
+            'campus_id' => $otherCampus->id,
+            'org_unit_id' => $orgUnit->id,
+            'title' => 'Other Campus Private Document',
+            'expires_at' => today()->addDays(40),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('campus.dashboard'));
+
+        $response
+            ->assertOk()
+            ->assertViewHas('campus', fn (Campus $campus): bool => $campus->is($mainCampus))
+            ->assertViewHas('metrics', fn (array $metrics): bool => $metrics['totalAssets'] === 2
+                && $metrics['activeAssets'] === 1
+                && $metrics['underMaintenance'] === 1
+                && $metrics['poorCritical'] === 1
+                && $metrics['openMaintenance'] === 1
+                && $metrics['expiringAgreements'] === 1
+                && $metrics['currentDocuments'] === 1)
+            ->assertSee('Main Campus Safety Certificate')
+            ->assertDontSee('Other Campus Private Document');
     }
 
     public function test_finance_dashboard_design_preview_displays_financial_operations(): void
