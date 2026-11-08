@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCampus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use LogicException;
 
 class AuditLog extends Model
 {
+    use BelongsToCampus;
+
     public const UPDATED_AT = null;
 
     protected $guarded = [];

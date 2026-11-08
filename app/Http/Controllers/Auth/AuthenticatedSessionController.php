@@ -29,6 +29,18 @@ class AuthenticatedSessionController extends Controller
             return $this->redirectTechnician($request);
         }
 
+        $dashboardRoute = match ($request->user()?->role?->name) {
+            'University Management' => 'management.dashboard',
+            'University Property / Estates Manager' => 'estates.dashboard',
+            'Campus Property Officer' => 'campus.dashboard',
+            'Finance Officer' => 'finance.dashboard',
+            default => null,
+        };
+
+        if ($dashboardRoute !== null) {
+            return redirect()->route($dashboardRoute);
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

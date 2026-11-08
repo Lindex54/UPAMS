@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCampus;
 use App\Models\Concerns\HasRecordProvenance;
 use Database\Factories\DocumentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Document extends Model
 {
     /** @use HasFactory<DocumentFactory> */
-    use HasFactory, HasRecordProvenance;
+    use BelongsToCampus, HasFactory, HasRecordProvenance;
 
     public function campus(): BelongsTo
     {

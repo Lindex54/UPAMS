@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCampus;
 use Database\Factories\ApprovalFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Approval extends Model
 {
     /** @use HasFactory<ApprovalFactory> */
-    use HasFactory;
+    use BelongsToCampus, HasFactory;
 
     public function campus(): BelongsTo
     {

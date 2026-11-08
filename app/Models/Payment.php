@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCampus;
 use Database\Factories\PaymentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,7 +23,7 @@ class Payment extends Model
     public const STATUS_REVERSED = 'Reversed';
 
     /** @use HasFactory<PaymentFactory> */
-    use HasFactory;
+    use BelongsToCampus, HasFactory;
 
     public function invoice(): BelongsTo
     {

@@ -64,6 +64,9 @@ class UserControllerTest extends TestCase
             ->assertSee($campus->name)
             ->assertSee($orgUnit->name)
             ->assertSee($role->name)
+            ->assertSee('Campus <span class="text-red-600"', escape: false)
+            ->assertSee('Organizational Unit <span class="text-red-600"', escape: false)
+            ->assertSee('Role <span class="text-red-600"', escape: false)
             ->assertSee('Initial password')
             ->assertSee('Confirm initial password')
             ->assertDontSee('name="is_active"', escape: false);

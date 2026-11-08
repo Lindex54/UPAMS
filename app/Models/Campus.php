@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\CampusFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,25 @@ class Campus extends Model
 
     /** @use HasFactory<CampusFactory> */
     use HasFactory;
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('assigned_campus', function (Builder $builder): void {
+            $user = auth()->user();
+
+            if (! $user instanceof User || ! $user->isCampusScoped()) {
+                return;
+            }
+
+            if ($user->campus_id === null) {
+                $builder->whereRaw('1 = 0');
+
+                return;
+            }
+
+            $builder->where($builder->getModel()->qualifyColumn('id'), $user->campus_id);
+        });
+    }
 
     public function district(): BelongsTo
     {

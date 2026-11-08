@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCampus;
 use App\Models\Concerns\HasRecordProvenance;
 use Database\Factories\ComputerLabFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ComputerLab extends Model
 {
     /** @use HasFactory<ComputerLabFactory> */
-    use HasFactory, HasRecordProvenance;
+    use BelongsToCampus, HasFactory, HasRecordProvenance;
 
     public function campus(): BelongsTo
     {

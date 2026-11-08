@@ -112,23 +112,68 @@
         </div>
 
         <nav class="scrollbar-hidden flex-1 overflow-y-auto px-3 py-5" aria-label="Primary navigation">
-            <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
                 @foreach ($navigationGroups as $group)
-                    <section>
-                        <p
-                            x-show="! sidebarCollapsed || sidebarOpen"
-                            class="px-3 text-[0.7rem] font-semibold tracking-[0.16em] text-white/60 uppercase"
+                    @php
+                        $groupHasActiveItem = collect($group['items'])->contains(function (array $item): bool {
+                            return ($item['route'] ?? false)
+                                ? request()->routeIs($item['pattern'])
+                                : request()->is($item['pattern']);
+                        });
+                        $groupId = $sidebarId.'-group-'.$loop->index;
+                    @endphp
+
+                    <section x-data="{ expanded: {{ $groupHasActiveItem ? 'true' : 'false' }} }">
+                        <button
+                            @class([
+                                'group flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-base font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
+                                'bg-white/10 text-white' => $groupHasActiveItem,
+                                'text-white/80 hover:bg-white/10 hover:text-white' => ! $groupHasActiveItem,
+                            ])
+                            type="button"
+                            @click="expanded = ! expanded"
+                            :aria-expanded="expanded"
+                            aria-controls="{{ $groupId }}"
+                            title="{{ $group['label'] }}"
                         >
-                            {{ $group['label'] }}
-                        </p>
+                            <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-white/10 text-white/85" aria-hidden="true">
+                                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 5h6v6H4V5Zm10 0h6v6h-6V5ZM4 15h6v4H4v-4Zm10 0h6v4h-6v-4Z" />
+                                </svg>
+                            </span>
+                            <span x-show="! sidebarCollapsed || sidebarOpen" class="min-w-0 flex-1 truncate" x-transition.opacity>
+                                {{ $group['label'] }}
+                            </span>
+                            <span x-show="sidebarCollapsed && ! sidebarOpen" class="sr-only">
+                                {{ $group['label'] }}
+                            </span>
+                            <svg
+                                x-show="! sidebarCollapsed || sidebarOpen"
+                                class="size-4 shrink-0 transition-transform duration-200"
+                                :class="expanded ? 'rotate-90' : ''"
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                            </svg>
+                        </button>
 
-                        <div
-                            x-show="sidebarCollapsed && ! sidebarOpen"
-                            class="mx-3 hidden border-t border-white/20 lg:block"
-                            aria-hidden="true"
-                        ></div>
-
-                        <ul class="mt-2 flex flex-col gap-1">
+                        <ul
+                            id="{{ $groupId }}"
+                            x-cloak
+                            x-show="expanded"
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 -translate-y-1"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 -translate-y-1"
+                            class="mt-1 ml-4 flex flex-col gap-1 border-l border-white/15 pl-3"
+                            :class="sidebarCollapsed && ! sidebarOpen ? 'lg:ml-0 lg:border-l-0 lg:pl-0' : ''"
+                        >
                             @foreach ($group['items'] as $item)
                                 @php
                                     $isActive = ($item['route'] ?? false)
@@ -143,7 +188,7 @@
                                         @class([
                                             'group flex min-h-10 items-center gap-3 rounded-lg border-l-4 px-3 py-2 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
                                             'border-busitema-gold bg-white text-busitema-blue shadow-sm dark:bg-slate-800 dark:text-sky-300' => $isActive,
-                                            'border-transparent text-white/85 hover:bg-white/10 hover:text-white' => ! $isActive,
+                                            'border-transparent text-white/75 hover:bg-white/10 hover:text-white' => ! $isActive,
                                         ])
                                         @if ($isActive) aria-current="page" @endif
                                         @click="sidebarOpen = false"

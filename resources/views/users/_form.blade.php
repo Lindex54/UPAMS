@@ -69,7 +69,7 @@
     </div>
 
     <div>
-        <label class="mb-2 block text-sm font-semibold text-heading" for="campus_id">Campus</label>
+        <label class="mb-2 block text-sm font-semibold text-heading" for="campus_id">Campus <span class="text-red-600" aria-hidden="true">*</span></label>
         <select class="block w-full rounded-lg border bg-white px-4 py-3 text-base text-heading outline-none transition focus:border-busitema-blue focus:ring-3 focus:ring-busitema-blue/15 @error('campus_id') border-red-400 @else border-border @enderror" id="campus_id" name="campus_id" required @error('campus_id') aria-invalid="true" aria-describedby="campus-error" @enderror>
             <option value="">Select campus</option>
             @foreach ($campuses as $campus)
@@ -82,7 +82,7 @@
     </div>
 
     <div>
-        <label class="mb-2 block text-sm font-semibold text-heading" for="org_unit_id">Organizational Unit</label>
+        <label class="mb-2 block text-sm font-semibold text-heading" for="org_unit_id">Organizational Unit <span class="text-red-600" aria-hidden="true">*</span></label>
         <select class="block w-full rounded-lg border bg-white px-4 py-3 text-base text-heading outline-none transition focus:border-busitema-blue focus:ring-3 focus:ring-busitema-blue/15 @error('org_unit_id') border-red-400 @else border-border @enderror" id="org_unit_id" name="org_unit_id" required @error('org_unit_id') aria-invalid="true" aria-describedby="org-unit-error" @enderror>
             <option value="">Select organizational unit</option>
             @foreach ($orgUnits as $orgUnit)
@@ -95,7 +95,7 @@
     </div>
 
     <div class="sm:col-span-2">
-        <label class="mb-2 block text-sm font-semibold text-heading" for="role_id">Role</label>
+        <label class="mb-2 block text-sm font-semibold text-heading" for="role_id">Role <span class="text-red-600" aria-hidden="true">*</span></label>
         <select class="block w-full rounded-lg border bg-white px-4 py-3 text-base text-heading outline-none transition focus:border-busitema-blue focus:ring-3 focus:ring-busitema-blue/15 @error('role_id') border-red-400 @else border-border @enderror" id="role_id" name="role_id" required @error('role_id') aria-invalid="true" aria-describedby="role-error" @enderror>
             <option value="">Select role</option>
             @foreach ($roles as $role)

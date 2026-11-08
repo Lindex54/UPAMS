@@ -73,6 +73,19 @@ class DashboardTest extends TestCase
             ->assertSee('Collapse sidebar');
     }
 
+    public function test_sidebar_navigation_groups_render_as_collapsible_dropdowns(): void
+    {
+        $user = User::factory()->make();
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
+
+        $response
+            ->assertSee('aria-controls="administrator-sidebar-group-0"', escape: false)
+            ->assertSee(':aria-expanded="expanded"', escape: false)
+            ->assertSee('x-show="expanded"', escape: false)
+            ->assertSee(':class="expanded ? \'rotate-90\' : \'\'"', escape: false);
+    }
+
     public function test_estates_dashboard_design_preview_displays_property_oversight_content(): void
     {
         $user = User::factory()->make();

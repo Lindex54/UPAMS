@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCampus;
 use Database\Factories\BeneficiaryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -24,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Beneficiary extends Model
 {
     /** @use HasFactory<BeneficiaryFactory> */
-    use HasFactory;
+    use BelongsToCampus, HasFactory;
 
     public function district(): BelongsTo
     {

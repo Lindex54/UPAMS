@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCampus;
 use Database\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,7 +42,7 @@ class Invoice extends Model
     public const EDITABLE_AFTER_ISSUE = ['description', 'property_reference', 'asset_reference', 'agreement_reference'];
 
     /** @use HasFactory<InvoiceFactory> */
-    use HasFactory;
+    use BelongsToCampus, HasFactory;
 
     public function beneficiary(): BelongsTo
     {

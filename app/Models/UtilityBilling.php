@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCampus;
 use Database\Factories\UtilityBillingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UtilityBilling extends Model
 {
     /** @use HasFactory<UtilityBillingFactory> */
-    use HasFactory;
+    use BelongsToCampus, HasFactory;
 
     public function meter(): BelongsTo
     {

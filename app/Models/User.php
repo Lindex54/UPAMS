@@ -38,6 +38,18 @@ class User extends Authenticatable
      */
     public const FINANCE_ROLES = ['System Administrator', 'Finance Officer'];
 
+    /**
+     * Roles whose operational records are restricted to their assigned campus.
+     *
+     * @var list<string>
+     */
+    public const CAMPUS_SCOPED_ROLES = [
+        'University Property / Estates Manager',
+        'Campus Property Officer',
+        'Finance Officer',
+        'IT Technician',
+    ];
+
     public function campus(): BelongsTo
     {
         return $this->belongsTo(Campus::class);
@@ -64,6 +76,11 @@ class User extends Authenticatable
     public function managesFinance(): bool
     {
         return $this->is_active && in_array($this->role?->name, self::FINANCE_ROLES, true);
+    }
+
+    public function isCampusScoped(): bool
+    {
+        return in_array($this->role?->name, self::CAMPUS_SCOPED_ROLES, true);
     }
 
     /**

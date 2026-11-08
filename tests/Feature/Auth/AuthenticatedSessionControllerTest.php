@@ -105,6 +105,22 @@ class AuthenticatedSessionControllerTest extends TestCase
         $this->assertAuthenticatedAs($technician);
     }
 
+    #[DataProvider('roleDashboardRoutes')]
+    public function test_staff_roles_land_on_their_own_dashboard_after_login(string $roleName, string $routeName): void
+    {
+        $staffMember = User::factory()->create([
+            'password' => 'correct-password',
+            'role_id' => Role::query()->firstOrCreate(['name' => $roleName])->id,
+        ]);
+
+        $this->post(route('login.store'), [
+            'email' => $staffMember->email,
+            'password' => 'correct-password',
+        ])->assertRedirect(route($routeName));
+
+        $this->assertAuthenticatedAs($staffMember);
+    }
+
     public function test_it_technician_is_not_sent_to_a_remembered_page_outside_the_ict_workspace(): void
     {
         $technician = $this->technician();
@@ -182,6 +198,19 @@ class AuthenticatedSessionControllerTest extends TestCase
             'management dashboard' => ['management.dashboard'],
             'campus dashboard' => ['campus.dashboard'],
             'finance dashboard' => ['finance.dashboard'],
+        ];
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function roleDashboardRoutes(): array
+    {
+        return [
+            'university management' => ['University Management', 'management.dashboard'],
+            'estates manager' => ['University Property / Estates Manager', 'estates.dashboard'],
+            'campus property officer' => ['Campus Property Officer', 'campus.dashboard'],
+            'finance officer' => ['Finance Officer', 'finance.dashboard'],
         ];
     }
 
