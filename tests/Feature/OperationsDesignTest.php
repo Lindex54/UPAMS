@@ -29,6 +29,19 @@ class OperationsDesignTest extends TestCase
             ->assertSee('dark:bg-red-950/75', escape: false);
     }
 
+    public function test_document_related_record_and_version_fields_are_optional(): void
+    {
+        $user = User::factory()->make(['is_active' => true]);
+
+        $response = $this->actingAs($user)->get(route('operations.documents.create'));
+
+        $response
+            ->assertSee('<span class="inline-flex items-center gap-1">Related Record </span>', escape: false)
+            ->assertSee('<span class="inline-flex items-center gap-1">Version </span>', escape: false)
+            ->assertDontSee('name="related_record" placeholder="Record reference and name" value="" required', escape: false)
+            ->assertDontSee('name="version" placeholder="e.g. 3.0" value="" required', escape: false);
+    }
+
     /**
      * @param  array<string, string>  $parameters
      * @param  array<int, string>  $expectedContent

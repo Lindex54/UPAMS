@@ -157,8 +157,8 @@
             'fields' => [
                 ['Document Title', 'text', 'Descriptive document title', 'Main Campus Land Title – Certified Scan', [], true],
                 ['Document Type', 'select', '', 'Title / Ownership', ['Title / Ownership', 'Agreement', 'Inspection Report', 'Maintenance Evidence', 'Licence / Certificate'], true],
-                ['Related Record', 'text', 'Record reference and name', 'LND-0086 · Arapai Research Farm', [], true],
-                ['Version', 'text', 'e.g. 3.0', '3.0', [], true],
+                ['Related Record', 'text', 'Record reference and name', 'LND-0086 · Arapai Research Farm', [], false, false],
+                ['Version', 'text', 'e.g. 3.0', '3.0', [], false, false],
                 ['Issue Date', 'date', '', '2026-07-18', [], false],
                 ['Expiry Date', 'date', '', '2029-07-17', [], false],
                 ['Document File', 'file', '', '', [], true],

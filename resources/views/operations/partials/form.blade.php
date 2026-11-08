@@ -52,12 +52,13 @@
                 @foreach ($design['fields'] as $field)
                     @php
                         [$label, $type, $placeholder, $editValue, $options, $isRequired] = array_pad($field, 6, false);
+                        $showsOptionalMarker = $field[6] ?? true;
                         $fieldName = str($label)->slug('_')->toString();
                         $isWide = in_array($type, ['textarea', 'file'], true);
                         $fieldValue = old($fieldName, $beneficiaryRecord?->{$fieldName} ?? ($isEdit ? $editValue : ''));
                     @endphp
                     <label class="flex flex-col gap-2 text-sm font-semibold text-heading {{ $isWide ? 'sm:col-span-2' : '' }}">
-                        <span class="inline-flex items-center gap-1">{{ $label }} @if ($isRequired)<span class="text-red-600">*</span>@else<span class="font-normal text-body-text">(optional)</span>@endif</span>
+                        <span class="inline-flex items-center gap-1">{{ $label }} @if ($isRequired)<span class="text-red-600">*</span>@elseif ($showsOptionalMarker)<span class="font-normal text-body-text">(optional)</span>@endif</span>
                         @if ($type === 'select')
                             <select class="min-h-11 rounded-lg border border-border bg-white px-3 text-sm font-normal text-heading outline-none transition focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" name="{{ $fieldName }}" @required($isRequired)>
                                 <option value="">Select {{ strtolower($label) }}</option>
