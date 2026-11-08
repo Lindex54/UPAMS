@@ -6,6 +6,7 @@ use App\Http\Controllers\BeneficiaryController;
 use App\Http\Controllers\BeneficiaryDocumentController;
 use App\Http\Controllers\Campus\DashboardController as CampusDashboardController;
 use App\Http\Controllers\CampusController;
+use App\Http\Controllers\Core\PropertyRecordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ArrearsController;
 use App\Http\Controllers\Finance\InvoiceController;
@@ -100,36 +101,37 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/audit-trail/{auditLog}', [AuditTrailController::class, 'show'])->name('audit-trail.show');
         Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('audit-trail.index');
 
-        $assetManagementModules = [
+        $functionalPropertyModules = [
             'assets',
             'land',
             'buildings',
-            'laboratories',
-            'vehicles',
             'commercial-property',
             'agricultural-property',
         ];
 
-        foreach ($assetManagementModules as $assetManagementModule) {
-            Route::view("/{$assetManagementModule}", 'asset-management.page', [
-                'module' => $assetManagementModule,
-                'page' => 'index',
-            ])->name("asset-management.{$assetManagementModule}.index");
+        foreach ($functionalPropertyModules as $propertyModule) {
+            Route::get("/{$propertyModule}", [PropertyRecordController::class, 'index'])->defaults('module', $propertyModule)->name("asset-management.{$propertyModule}.index");
+            Route::get("/{$propertyModule}/create", [PropertyRecordController::class, 'create'])->defaults('module', $propertyModule)->name("asset-management.{$propertyModule}.create");
+            Route::post("/{$propertyModule}", [PropertyRecordController::class, 'store'])->defaults('module', $propertyModule)->name("asset-management.{$propertyModule}.store");
+            Route::get("/{$propertyModule}/{record}/edit", [PropertyRecordController::class, 'edit'])->defaults('module', $propertyModule)->name("asset-management.{$propertyModule}.edit");
+            Route::put("/{$propertyModule}/{record}", [PropertyRecordController::class, 'update'])->defaults('module', $propertyModule)->name("asset-management.{$propertyModule}.update");
+            Route::get("/{$propertyModule}/{record}", [PropertyRecordController::class, 'show'])->defaults('module', $propertyModule)->name("asset-management.{$propertyModule}.show");
+        }
 
-            Route::view("/{$assetManagementModule}/create", 'asset-management.page', [
-                'module' => $assetManagementModule,
-                'page' => 'create',
-            ])->name("asset-management.{$assetManagementModule}.create");
+        foreach (['laboratories', 'vehicles'] as $assetManagementModule) {
+            foreach (['index', 'create', 'edit', 'show'] as $page) {
+                $suffix = match ($page) {
+                    'index' => '',
+                    'create' => '/create',
+                    'edit' => '/{record}/edit',
+                    'show' => '/{record}',
+                };
 
-            Route::view("/{$assetManagementModule}/{record}/edit", 'asset-management.page', [
-                'module' => $assetManagementModule,
-                'page' => 'edit',
-            ])->name("asset-management.{$assetManagementModule}.edit");
-
-            Route::view("/{$assetManagementModule}/{record}", 'asset-management.page', [
-                'module' => $assetManagementModule,
-                'page' => 'show',
-            ])->name("asset-management.{$assetManagementModule}.show");
+                Route::view("/{$assetManagementModule}{$suffix}", 'asset-management.page', [
+                    'module' => $assetManagementModule,
+                    'page' => $page,
+                ])->name("asset-management.{$assetManagementModule}.{$page}");
+            }
         }
 
         $operationsModules = [

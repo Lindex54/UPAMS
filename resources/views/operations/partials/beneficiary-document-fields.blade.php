@@ -20,7 +20,7 @@
                 <div class="min-w-0">
                     <p class="flex items-center gap-2 text-sm font-semibold text-heading">
                         <svg class="size-4 shrink-0 {{ $storedDocument ? 'text-emerald-600' : 'text-body-text' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">@if ($storedDocument)<path d="m5 12 4 4L19 6" />@else<path d="M7 3h8l4 4v14H7V3Zm8 0v5h4" />@endif</svg>
-                        {{ $title }} <span class="font-normal text-body-text">(optional)</span>
+                        {{ $title }}
                     </p>
                     @if ($storedDocument)
                         <p class="mt-1 truncate pl-6 text-xs text-body-text">

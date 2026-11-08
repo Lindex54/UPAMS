@@ -14,7 +14,7 @@
     }"
 >
     <label class="flex flex-col gap-2 text-sm font-semibold text-heading">
-        <span>Person's Photo <span class="font-normal text-body-text">(optional)</span></span>
+        <span>Person's Photo</span>
         <span class="grid gap-4 rounded-xl border border-dashed border-border bg-light-background p-4 sm:grid-cols-[7rem_1fr] sm:items-center">
             <span class="flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-border bg-white text-body-text shadow-sm">
                 <img x-cloak x-show="imageUrl" :src="imageUrl" class="size-full object-cover" alt="Selected beneficiary photo preview">

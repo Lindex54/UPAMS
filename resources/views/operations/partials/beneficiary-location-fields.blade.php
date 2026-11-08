@@ -93,7 +93,7 @@
         </label>
 
         <label class="flex flex-col gap-2 text-sm font-semibold text-heading sm:col-span-2 lg:col-span-3">
-            <span class="inline-flex items-center gap-1">Physical Address / Landmark <span class="font-normal text-body-text">(optional)</span></span>
+            <span class="inline-flex items-center gap-1">Physical Address / Landmark</span>
             <textarea class="min-h-24 rounded-lg border border-border bg-white px-3 py-3 text-sm font-normal text-heading outline-none placeholder:text-body-text/60 focus:border-busitema-blue focus:ring-2 focus:ring-busitema-blue/15" name="physical_address_landmark" placeholder="Road, building, trading centre, or nearby landmark">{{ old('physical_address_landmark', $beneficiaryRecord?->physical_address_landmark) }}</textarea>
             @error('physical_address_landmark')<span class="text-xs font-normal text-red-600">{{ $message }}</span>@enderror
         </label>

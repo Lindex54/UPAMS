@@ -170,7 +170,11 @@
     ];
 
     $design = $moduleDesigns[$module];
-    $record = collect($design['records'])->firstWhere('reference', request()->route('record')) ?? $design['records'][0];
+    if (isset($liveRecords)) {
+        $design['records'] = $liveRecords->items();
+        $design['summary'] = $liveSummary;
+    }
+    $record = $liveRecord ?? collect($design['records'])->firstWhere('reference', request()->route('record')) ?? ($design['records'][0] ?? []);
     $pageHeading = match ($page) {
         'create' => $design['action'],
         'edit' => 'Edit '.$design['singular'],
@@ -183,6 +187,12 @@
 
 @section('title', $pageHeading.' | Property Management')
 @section('page-heading', $pageHeading)
+
+@if (auth()->user()?->role?->name === 'Campus Property Officer')
+    @section('sidebar')
+        <x-campus-sidebar />
+    @endsection
+@endif
 
 @section('content')
     @include("asset-management.partials.{$page}", ['design' => $design, 'module' => $module, 'record' => $record])

@@ -4,6 +4,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 
 | Applies to | Rule file |
 | --- | --- |
+| app/{Http/Controllers/Core,Http/Requests,Services}/**/*Property*.php,resources/views/asset-management/**/*.blade.php | .ai/rules/asset-management.md |
 | app/{Console,Services}/**/*UgandaLocation*.php | .ai/rules/console-services.md |
 | app/Http/Controllers/**/*.php | .ai/rules/controllers.md |
 | app/{Http/Controllers/Technician,Http/Requests/Technician,Services}/**/*.php,resources/views/technician/equipment/*.blade.php | .ai/rules/equipment.md |
